@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+@import "tailwindcss";
+
+* { font-family: 'DM Sans', system-ui, sans-serif; }
+
+html {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+}
+
+@media (max-width: 768px) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+}
+
+/* ── CSS mesh gradient backgrounds (replaces WebGL shaders) ─────────────── */
+@keyframes mesh-breathe {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.82; }
+}
+
+.mesh-content {
+  background:
+    radial-gradient(ellipse 80% 90% at 15% 20%, #014d5850 0%, transparent 65%),
+    radial-gradient(ellipse 65% 75% at 85% 80%, #012a3055 0%, transparent 65%),
+    radial-gradient(ellipse 55% 65% at 50% 50%, #01303a30 0%, transparent 65%),
+    #000c0f;
+  animation: mesh-breathe 9s ease-in-out infinite;
+}
+
+.mesh-development {
+  background:
+    radial-gradient(ellipse 80% 90% at 20% 25%, #2d0d5250 0%, transparent 65%),
+    radial-gradient(ellipse 65% 75% at 80% 75%, #1a053550 0%, transparent 65%),
+    radial-gradient(ellipse 55% 60% at 50% 50%, #0d002030 0%, transparent 65%),
+    #080010;
+  animation: mesh-breathe 11s ease-in-out infinite;
+}
+
+.mesh-business {
+  background:
+    radial-gradient(ellipse 80% 85% at 20% 25%, #00206050 0%, transparent 65%),
+    radial-gradient(ellipse 65% 75% at 80% 75%, #00153550 0%, transparent 65%),
+    radial-gradient(ellipse 50% 60% at 50% 45%, #000d2530 0%, transparent 65%),
+    #00050f;
+  animation: mesh-breathe 10s ease-in-out infinite;
+}
+
+.mesh-education {
+  background:
+    radial-gradient(ellipse 80% 85% at 20% 30%, #3d240050 0%, transparent 65%),
+    radial-gradient(ellipse 65% 70% at 80% 70%, #2a180050 0%, transparent 65%),
+    radial-gradient(ellipse 55% 60% at 50% 50%, #1a0f0030 0%, transparent 65%),
+    #0d0700;
+  animation: mesh-breathe 12s ease-in-out infinite;
+}
+
+/* ── Grain / noise overlay ───────────────────────────────────────────────── */
+html::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  opacity: 0.038;
+  pointer-events: none;
+  z-index: 9998;
+  animation: grain-shift 7s steps(2) infinite;
+}
+
+@keyframes grain-shift {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-1%, -1%); }
+  50%  { transform: translate(1%,  0%); }
+  75%  { transform: translate(0%,  1%); }
+  100% { transform: translate(-1%, 0%); }
+}
+
+/* ── Animated gradient text ──────────────────────────────────────────────── */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0%   50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+.text-gradient-anim {
+  background: linear-gradient(135deg, #60a5fa 0%, #22d3ee 33%, #a78bfa 66%, #60a5fa 100%);
+  background-size: 300% 300%;
+  animation: gradient-shift 5s ease infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.panel-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.panel-scroll::-webkit-scrollbar { display: none; }
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes scanline {
+  0%   { transform: translateY(-110%); opacity: 0; }
+  8%   { opacity: 0.5; }
+  92%  { opacity: 0.5; }
+  100% { transform: translateY(110%); opacity: 0; }
+}
+.mask-scan { animation: scanline 3.5s ease-in-out infinite; }
+
+/* sign-in animations */
+@keyframes fadeSlideIn {
+  from { opacity: 0; filter: blur(8px); transform: translateY(20px); }
+  to   { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+@keyframes slideRightIn {
+  from { opacity: 0; filter: blur(4px); transform: translateX(-20px); }
+  to   { opacity: 1; filter: blur(0); transform: translateX(0); }
+}
+@keyframes testimonialIn {
+  from { opacity: 0; filter: blur(4px); transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+}
+
+.animate-element {
+  opacity: 0;
+  animation: fadeSlideIn 0.6s ease forwards;
+}
+.animate-testimonial {
+  opacity: 0;
+  animation: testimonialIn 0.6s ease forwards;
+}
+.animate-slide-right {
+  opacity: 0;
+  animation: slideRightIn 0.7s ease forwards;
+}
+
+.animate-delay-100  { animation-delay: 0.1s; }
+.animate-delay-200  { animation-delay: 0.2s; }
+.animate-delay-300  { animation-delay: 0.3s; }
+.animate-delay-400  { animation-delay: 0.4s; }
+.animate-delay-500  { animation-delay: 0.5s; }
+.animate-delay-600  { animation-delay: 0.6s; }
+.animate-delay-700  { animation-delay: 0.7s; }
+.animate-delay-800  { animation-delay: 0.8s; }
+.animate-delay-900  { animation-delay: 0.9s; }
+.animate-delay-1000 { animation-delay: 1.0s; }
+.animate-delay-1200 { animation-delay: 1.2s; }
+.animate-delay-1400 { animation-delay: 1.4s; }
+
+.custom-checkbox {
+  appearance: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid rgb(139 92 246 / 0.5);
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.custom-checkbox:checked {
+  background: rgb(139 92 246);
+  border-color: rgb(139 92 246);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 5l2.5 2.5L8 3' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-size: 80%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.15) 80%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
