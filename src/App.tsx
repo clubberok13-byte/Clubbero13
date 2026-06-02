@@ -276,6 +276,26 @@ function DetailModal({ section, onClose, onContact }: { section: SectionData; on
   )
 }
 
+// ── Split chars — letter stagger ──────────────────────────────────────────────
+function SplitChars({ text, baseDelay }: { text: string; baseDelay: number }) {
+  return (
+    <>
+      {text.split('').map((char, i) => (
+        <span key={i} style={{ display: 'inline-block', overflow: 'hidden' }}>
+          <motion.span
+            style={{ display: 'inline-block' }}
+            initial={{ y: '110%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            transition={{ delay: baseDelay + i * 0.032, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {char === ' ' ? ' ' : char}
+          </motion.span>
+        </span>
+      ))}
+    </>
+  )
+}
+
 // ── Rotating word ────────────────────────────────────────────────────────────
 const ROTATE_WORDS = ['бизнеса —', 'контента —', 'команды —', 'процессов —']
 
@@ -367,14 +387,20 @@ function RevealHero({ onContact, onScrollToServices }: {
             style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
           >
             {HERO.title.map((line, i) => (
-              <div key={i} style={{ overflow: 'hidden' }}>
-                <motion.div
-                  initial={{ y: '110%' }}
-                  animate={{ y: '0%' }}
-                  transition={{ delay: 0.95 + i * 0.1, duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  {i === 1 ? <>Вашего <RotatingWord /></> : line}
-                </motion.div>
+              <div key={i} style={{ lineHeight: '1.12' }}>
+                {i === 1 ? (
+                  <div style={{ overflow: 'hidden' }}>
+                    <motion.div
+                      initial={{ y: '110%' }}
+                      animate={{ y: '0%' }}
+                      transition={{ delay: 1.05, duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      Вашего <RotatingWord />
+                    </motion.div>
+                  </div>
+                ) : (
+                  <SplitChars text={line} baseDelay={0.92 + i * 0.08} />
+                )}
               </div>
             ))}
           </h1>
@@ -817,6 +843,7 @@ export default function App() {
   const [showTopBtn, setShowTopBtn] = useState(false)
   const [serviceTab, setServiceTab] = useState(0)
   const [inServices, setInServices] = useState(false)
+  const [sectionIdx, setSectionIdx] = useState(0)
   const [detailSection, setDetailSection] = useState<SectionData | null>(null)
   const [contactSection, setContactSection] = useState<SectionData | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -838,8 +865,10 @@ export default function App() {
 
   useEffect(() => {
     const onScroll = () => {
-      setInServices(window.scrollY >= window.innerHeight - 30)
-      setShowTopBtn(window.scrollY > window.innerHeight / 2)
+      const vh = window.innerHeight
+      setInServices(window.scrollY >= vh - 30)
+      setShowTopBtn(window.scrollY > vh / 2)
+      setSectionIdx(Math.min(Math.floor(window.scrollY / vh), 5))
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
@@ -975,7 +1004,7 @@ export default function App() {
 
 
       {/* ── Custom cursor (service panels only) ── */}
-      {inServices && <CustomCursor accent="rgba(255,255,255,0.15)" />}
+      {inServices && <CustomCursor accent={`${[HERO.accent, SECTIONS[serviceTab].accent, '#3b82f6', '#a78bfa', '#22d3ee', '#3b82f6'][sectionIdx] ?? HERO.accent}55`} />}
 
       {/* ── Messenger FABs ── */}
       <div className="fixed right-5 bottom-8 z-40 flex flex-col gap-2 items-end">

@@ -1,4 +1,4 @@
-import { motion, useInView } from 'framer-motion'
+import { motion, useInView, animate } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import { FloatingOrbs, SplitTitle, useScrambleOnView } from '../ui/animations'
 
@@ -24,14 +24,13 @@ function StatNum({ stat }: { stat: Stat }) {
 
   useEffect(() => {
     if (!inView) return
-    let start: number | null = null
-    const step = (ts: number) => {
-      if (!start) start = ts
-      const p = Math.min((ts - start) / 1200, 1)
-      setV(Math.round((1 - Math.pow(1 - p, 3)) * stat.value))
-      if (p < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
+    const controls = animate(0, stat.value, {
+      type: 'spring',
+      damping: 18,
+      stiffness: 65,
+      onUpdate: (latest) => setV(Math.round(latest)),
+    })
+    return () => controls.stop()
   }, [inView, stat.value])
 
   return <span ref={ref}>{v}{stat.suffix}</span>

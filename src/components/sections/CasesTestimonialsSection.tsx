@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Star } from 'lucide-react'
 import { FloatingOrbs, SplitTitle, useScrambleOnView } from '../ui/animations'
 import { GlowCard } from '../ui/spotlight-card'
@@ -48,6 +48,8 @@ const REVIEWS = [
 
 export default function CasesTestimonialsSection() {
   const [tab, setTab] = useState<'cases' | 'reviews'>('cases')
+  const [isDragging, setIsDragging] = useState(false)
+  const constraintRef = useRef<HTMLDivElement>(null)
   const { ref, scrambled } = useScrambleOnView('Результаты')
 
   return (
@@ -96,32 +98,49 @@ export default function CasesTestimonialsSection() {
           {tab === 'cases' ? (
             <motion.div
               key="cases"
-              className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6
-                         sm:mx-0 sm:px-0 sm:overflow-x-visible sm:snap-none sm:pb-0
-                         sm:grid sm:grid-cols-2 lg:grid-cols-4"
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.28 }}
             >
-              {CASES.map((c, i) => (
-                <motion.div key={c.num} className="shrink-0 snap-start w-[72vw] sm:w-auto"
-                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08 + i * 0.06, duration: 0.45 }}
+              <div
+                ref={constraintRef}
+                className="overflow-hidden"
+                style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+              >
+                <motion.div
+                  drag="x"
+                  dragConstraints={constraintRef}
+                  dragElastic={0.05}
+                  onDragStart={() => setIsDragging(true)}
+                  onDragEnd={() => setIsDragging(false)}
+                  className="flex gap-3 pb-2"
+                  style={{ width: 'max-content' }}
                 >
-                  <GlowCard glowColor={c.glow} customSize className="w-full p-5 flex flex-col justify-between min-h-[190px]">
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] tracking-[0.25em] uppercase font-medium" style={{ color: c.accent }}>{c.category}</span>
-                        <span className="text-white/15 text-[11px]">{c.num}</span>
-                      </div>
-                      <p className="text-white text-[14px] font-medium leading-snug mb-2">{c.title}</p>
-                      <p className="text-white/40 text-[12px] leading-relaxed">{c.desc}</p>
-                    </div>
-                    <div className="pt-3 border-t border-white/[0.08] mt-4">
-                      <p className="text-[13px] font-semibold" style={{ color: c.accent }}>{c.result}</p>
-                    </div>
-                  </GlowCard>
+                  {CASES.map((c, i) => (
+                    <motion.div key={c.num}
+                      className="w-[260px] sm:w-[280px] shrink-0"
+                      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08 + i * 0.06, duration: 0.45 }}
+                    >
+                      <GlowCard glowColor={c.glow} customSize className="w-full p-5 flex flex-col justify-between min-h-[190px]">
+                        <div>
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] tracking-[0.25em] uppercase font-medium" style={{ color: c.accent }}>{c.category}</span>
+                            <span className="text-white/15 text-[11px]">{c.num}</span>
+                          </div>
+                          <p className="text-white text-[14px] font-medium leading-snug mb-2">{c.title}</p>
+                          <p className="text-white/40 text-[12px] leading-relaxed">{c.desc}</p>
+                        </div>
+                        <div className="pt-3 border-t border-white/[0.08] mt-4">
+                          <p className="text-[13px] font-semibold" style={{ color: c.accent }}>{c.result}</p>
+                        </div>
+                      </GlowCard>
+                    </motion.div>
+                  ))}
                 </motion.div>
-              ))}
+              </div>
+              <p className="text-white/15 text-[10px] mt-3 tracking-[0.25em] uppercase text-center select-none">
+                drag to explore
+              </p>
             </motion.div>
           ) : (
             <motion.div

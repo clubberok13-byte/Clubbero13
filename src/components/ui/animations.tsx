@@ -30,10 +30,10 @@ export function FloatingOrbs({ accent }: { accent: string }) {
 
 // ── Clip-path line reveal ────────────────────────────────────────────────────
 const lineVariants = {
-  hidden: { y: '108%', opacity: 0 },
+  hidden: { y: '108%', opacity: 0, filter: 'blur(6px)' },
   visible: (i: number) => ({
-    y: '0%', opacity: 1,
-    transition: { delay: 0.08 + i * 0.1, duration: 0.72, ease: [0.16, 1, 0.3, 1] as const },
+    y: '0%', opacity: 1, filter: 'blur(0px)',
+    transition: { delay: 0.08 + i * 0.1, duration: 0.75, ease: [0.16, 1, 0.3, 1] as const },
   }),
 }
 
