@@ -624,23 +624,26 @@ function ServiceTabsPanel({ activeTabIdx, onTabChange, onDetail, onContact }: {
       <FloatingOrbs accent={section.accent} />
 
       {/* Tab bar */}
-      <div className="absolute top-20 sm:top-24 left-0 right-0 z-20 overflow-x-auto scrollbar-hide">
-        <div className="flex items-center justify-center gap-1 px-4 min-w-max mx-auto">
-          {SECTIONS.map((s, i) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => onTabChange(i)}
-              className={`shrink-0 text-[10px] sm:text-[11px] tracking-[0.15em] uppercase px-3 sm:px-4 py-1.5 rounded-full transition-all duration-300 border ${
-                activeTabIdx === i
-                  ? 'bg-white/12 text-white border-white/25 backdrop-blur-sm'
-                  : 'text-white/35 border-transparent hover:text-white/60'
-              }`}
-            >
+      <div className="absolute top-20 sm:top-24 left-0 right-0 z-20 flex items-center justify-center gap-1 px-4">
+        {SECTIONS.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => onTabChange(i)}
+            className={`shrink-0 transition-all duration-300 border rounded-full ${
+              activeTabIdx === i
+                ? 'bg-white/12 text-white border-white/25 backdrop-blur-sm'
+                : 'text-white/35 border-transparent hover:text-white/60'
+            }`}
+          >
+            <span className="sm:hidden block text-[11px] tracking-[0.1em] px-3 py-1.5">
+              {s.category.split(' / ')[0]}
+            </span>
+            <span className="hidden sm:block text-[11px] tracking-[0.12em] uppercase px-4 py-1.5 whitespace-nowrap">
               {s.category.split(' / ')[1]}
-            </button>
-          ))}
-        </div>
+            </span>
+          </button>
+        ))}
       </div>
 
       <AnimatePresence mode="wait">
