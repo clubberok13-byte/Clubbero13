@@ -1,7 +1,8 @@
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { MessageSquare, BarChart2, Zap, Shield } from 'lucide-react'
 import { FloatingOrbs, SplitTitle, useScrambleOnView } from '../ui/animations'
 import type { LucideIcon } from 'lucide-react'
+import { useRef } from 'react'
 
 const STEPS: { num: string; icon: LucideIcon; title: string; desc: string }[] = [
   {
@@ -30,6 +31,54 @@ const STEPS: { num: string; icon: LucideIcon; title: string; desc: string }[] = 
   },
 ]
 
+function StepCard({ step, index }: { step: typeof STEPS[0]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const Icon = step.icon
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: index * 0.12, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      className="relative flex flex-col"
+    >
+      {/* Connector line to next (desktop) */}
+      {index < STEPS.length - 1 && (
+        <div className="hidden lg:block absolute top-6 left-[calc(50%+24px)] right-[-50%] h-px overflow-hidden">
+          <motion.div
+            className="h-full origin-left"
+            style={{ background: 'linear-gradient(to right, rgba(34,211,238,0.35), rgba(34,211,238,0.05))' }}
+            initial={{ scaleX: 0 }}
+            animate={inView ? { scaleX: 1 } : {}}
+            transition={{ delay: index * 0.12 + 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          />
+        </div>
+      )}
+
+      {/* Circle */}
+      <motion.div
+        className="w-12 h-12 rounded-full flex items-center justify-center mb-5 self-start relative"
+        style={{ border: '1px solid rgba(34,211,238,0.25)', background: 'rgba(34,211,238,0.06)' }}
+        animate={inView ? { boxShadow: '0 0 18px rgba(34,211,238,0.18)' } : { boxShadow: 'none' }}
+        transition={{ delay: index * 0.12 + 0.2, duration: 0.5 }}
+      >
+        <Icon size={16} className="text-cyan-400" />
+        <span
+          className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-semibold text-cyan-400"
+          style={{ background: '#060606', border: '1px solid rgba(34,211,238,0.25)' }}
+        >
+          {index + 1}
+        </span>
+      </motion.div>
+
+      <p className="text-white text-[15px] font-medium mb-2">{step.title}</p>
+      <p className="text-white/45 text-[13px] leading-relaxed">{step.desc}</p>
+    </motion.div>
+  )
+}
+
 export default function HowWeWorkSection() {
   const { ref, scrambled } = useScrambleOnView('Процесс')
 
@@ -55,30 +104,10 @@ export default function HowWeWorkSection() {
           style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {STEPS.map((step, i) => {
-            const Icon = step.icon
-            return (
-              <motion.div key={step.num}
-                initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ delay: 0.15 + i * 0.1, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-                className="relative"
-              >
-                {/* Connector line (desktop) */}
-                {i < STEPS.length - 1 && (
-                  <div className="hidden lg:block absolute top-5 left-[calc(100%+12px)] w-[calc(100%-24px)] h-px bg-white/8 z-0" />
-                )}
-
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center mb-4">
-                  <Icon size={17} className="text-blue-400" />
-                </div>
-
-                <p className="text-white/20 text-[11px] tracking-[0.2em] uppercase mb-2">{step.num}</p>
-                <p className="text-white text-[15px] font-medium mb-2">{step.title}</p>
-                <p className="text-white/45 text-[13px] leading-relaxed">{step.desc}</p>
-              </motion.div>
-            )
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+          {STEPS.map((step, i) => (
+            <StepCard key={step.num} step={step} index={i} />
+          ))}
         </div>
       </div>
     </div>

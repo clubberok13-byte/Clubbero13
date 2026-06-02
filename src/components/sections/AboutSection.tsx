@@ -11,10 +11,22 @@ const STATS: Stat[] = [
   { value: 4,   suffix: '',  label: 'направления', bar: 100 },
 ]
 
-const TOOLS = [
-  'ChatGPT', 'Midjourney', 'Runway ML', 'HeyGen', 'ElevenLabs',
-  'n8n / Make', 'GPT-4o', 'Stable Diffusion', 'Telegram Bot', 'Claude',
-  'Perplexity', 'Kling AI', 'Figma AI', 'Whisper', 'Sora',
+const TOOLS: { name: string; color: string }[] = [
+  { name: 'ChatGPT',         color: '#10b981' },
+  { name: 'Midjourney',      color: '#3b82f6' },
+  { name: 'Runway ML',       color: '#8b5cf6' },
+  { name: 'HeyGen',          color: '#f59e0b' },
+  { name: 'ElevenLabs',      color: '#22d3ee' },
+  { name: 'n8n / Make',      color: '#f97316' },
+  { name: 'GPT-4o',          color: '#10b981' },
+  { name: 'Stable Diffusion',color: '#a78bfa' },
+  { name: 'Telegram Bot',    color: '#2AABEE' },
+  { name: 'Claude',          color: '#f59e0b' },
+  { name: 'Perplexity',      color: '#22d3ee' },
+  { name: 'Kling AI',        color: '#ec4899' },
+  { name: 'Figma AI',        color: '#f97316' },
+  { name: 'Whisper',         color: '#60a5fa' },
+  { name: 'Sora',            color: '#8b5cf6' },
 ]
 
 function StatNum({ stat }: { stat: Stat }) {
@@ -38,7 +50,7 @@ function StatNum({ stat }: { stat: Stat }) {
 
 export default function AboutSection() {
   const { ref, scrambled } = useScrambleOnView('О нас')
-  const doubled = [...TOOLS, ...TOOLS]
+  const doubled = [...TOOLS, ...TOOLS, ...TOOLS]
 
   return (
     <div
@@ -114,9 +126,10 @@ export default function AboutSection() {
           transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
         >
           {doubled.map((tool, i) => (
-            <span key={i} className="inline-flex items-center gap-5 text-[11px] tracking-[0.22em] uppercase text-white/25 px-5">
-              {tool}
-              <span className="inline-block w-[3px] h-[3px] rounded-full bg-white/15 shrink-0" />
+            <span key={i} className="inline-flex items-center gap-2.5 text-[11px] tracking-[0.2em] uppercase px-5 text-white/30">
+              <span className="inline-block w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: tool.color, opacity: 0.7 }} />
+              {tool.name}
+              <span className="inline-block w-[3px] h-[3px] rounded-full bg-white/12 shrink-0 ml-1" />
             </span>
           ))}
         </motion.div>

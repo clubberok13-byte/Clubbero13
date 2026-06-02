@@ -370,16 +370,18 @@ function RevealHero({ onContact, onScrollToServices, onPlayVideo }: {
           <motion.a
             href="#"
             onClick={e => { e.preventDefault(); onScrollToServices() }}
-            className="inline-flex items-center gap-2 text-[11.5px] font-medium text-gradient-anim hover:opacity-80 transition-opacity mb-5 group"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="inline-flex items-center gap-2.5 text-[11px] font-medium text-white/70 px-4 py-1.5 rounded-full mb-5 group hover:text-white transition-colors duration-300"
+            style={{ border: '1px solid rgba(96,165,250,0.3)', background: 'rgba(96,165,250,0.06)', boxShadow: '0 0 18px rgba(96,165,250,0.12)' }}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.85, duration: 0.5 }}
+            whileHover={{ boxShadow: '0 0 28px rgba(96,165,250,0.22)', borderColor: 'rgba(96,165,250,0.55)' }}
           >
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+            <span className="relative flex h-1.5 w-1.5 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-70" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-400" />
             </span>
             {HERO.badge}
-            <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+            <span className="text-white/40 group-hover:text-white/70 transition-colors group-hover:translate-x-0.5 inline-block transition-transform duration-200">→</span>
           </motion.a>
 
           {/* Title — big with rotating word on line 1 */}
@@ -643,21 +645,23 @@ function ServiceTabsPanel({ activeTabIdx, onTabChange, onDetail, onContact }: {
       <FloatingOrbs accent={section.accent} />
 
       {/* Tab bar */}
-      <div className="absolute top-20 sm:top-24 left-0 right-0 z-20 flex items-center justify-center gap-1 px-4">
-        {SECTIONS.map((s, i) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => onTabChange(i)}
-            className={`text-[11px] tracking-[0.18em] uppercase px-4 py-1.5 rounded-full transition-all duration-300 border ${
-              activeTabIdx === i
-                ? 'bg-white/12 text-white border-white/25 backdrop-blur-sm'
-                : 'text-white/35 border-transparent hover:text-white/60'
-            }`}
-          >
-            {s.category.split(' / ')[1]}
-          </button>
-        ))}
+      <div className="absolute top-20 sm:top-24 left-0 right-0 z-20 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center justify-center gap-1 px-4 min-w-max mx-auto">
+          {SECTIONS.map((s, i) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => onTabChange(i)}
+              className={`shrink-0 text-[10px] sm:text-[11px] tracking-[0.15em] uppercase px-3 sm:px-4 py-1.5 rounded-full transition-all duration-300 border ${
+                activeTabIdx === i
+                  ? 'bg-white/12 text-white border-white/25 backdrop-blur-sm'
+                  : 'text-white/35 border-transparent hover:text-white/60'
+              }`}
+            >
+              {s.category.split(' / ')[1]}
+            </button>
+          ))}
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
