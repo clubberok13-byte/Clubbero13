@@ -323,9 +323,10 @@ function RotatingWord() {
 }
 
 // ── Reveal Hero ───────────────────────────────────────────────────────────────
-function RevealHero({ onContact, onScrollToServices }: {
+function RevealHero({ onContact, onScrollToServices, onPlayVideo }: {
   onContact: () => void
   onScrollToServices: () => void
+  onPlayVideo: () => void
 }) {
   const heroRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
@@ -416,6 +417,7 @@ function RevealHero({ onContact, onScrollToServices }: {
 
           {/* CTA */}
           <motion.div
+            className="flex items-center gap-4 flex-wrap"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 1.4, duration: 0.5 }}
           >
@@ -426,6 +428,13 @@ function RevealHero({ onContact, onScrollToServices }: {
                 <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-60 group-hover:opacity-100">→</span>
               </button>
             </MagneticButton>
+            <button type="button" onClick={onPlayVideo}
+              className="inline-flex items-center gap-2.5 text-[13px] font-medium text-white/35 hover:text-white/65 transition-colors duration-200 group">
+              <span className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:border-white/40 group-hover:bg-white/5 transition-all duration-200">
+                <Play size={12} className="ml-0.5" />
+              </span>
+              Смотреть шоурил
+            </button>
           </motion.div>
         </div>
       </motion.div>
@@ -784,6 +793,8 @@ function GrainOverlay() {
 }
 
 // ── Preloader ─────────────────────────────────────────────────────────────────
+const LOGO_PATH = 'M 160 88 L 194 34 L 216 0 L 256 0 L 256 40 L 221.5 93.5 L 200 128 L 256 128 L 256 256 L 96 256 L 96 168 L 64.246 220 L 40 256 L 0 256 L 0 216 L 34 162 L 56 128 L 0 128 L 0 0 L 160 0 Z'
+
 function Preloader({ done }: { done: boolean }) {
   return (
     <AnimatePresence>
@@ -791,24 +802,105 @@ function Preloader({ done }: { done: boolean }) {
         <motion.div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a0a]"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.55, ease: 'easeInOut' } }}
+          exit={{ opacity: 0, transition: { duration: 0.6, ease: 'easeInOut' } }}
         >
-          <motion.div
-            className="flex flex-col items-center gap-4"
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <svg width="36" height="36" viewBox="0 0 256 256" fill="none">
-              <path fill="url(#lidinc-grad)" d="M 160 88 L 194 34 L 216 0 L 256 0 L 256 40 L 221.5 93.5 L 200 128 L 256 128 L 256 256 L 96 256 L 96 168 L 64.246 220 L 40 256 L 0 256 L 0 216 L 34 162 L 56 128 L 0 128 L 0 0 L 160 0 Z" />
+          <div className="flex flex-col items-center gap-5">
+            <svg width="72" height="72" viewBox="0 0 256 256" fill="none">
+              <defs>
+                <linearGradient id="pre-grad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#60a5fa" />
+                  <stop offset="100%" stopColor="#22d3ee" />
+                </linearGradient>
+              </defs>
+              {/* Fill fades in after stroke */}
+              <motion.path
+                fill="url(#pre-grad)"
+                d={LOGO_PATH}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1, duration: 0.45 }}
+              />
+              {/* Stroke draws then fades */}
+              <motion.path
+                stroke="url(#pre-grad)"
+                strokeWidth="5"
+                fill="none"
+                d={LOGO_PATH}
+                initial={{ pathLength: 0, opacity: 1 }}
+                animate={{ pathLength: 1, opacity: 0 }}
+                transition={{
+                  pathLength: { duration: 1.0, ease: 'easeInOut' },
+                  opacity: { delay: 1.05, duration: 0.25 },
+                }}
+              />
             </svg>
             <motion.p
-              className="text-white/50 text-[11px] tracking-[0.45em] uppercase"
+              className="text-white/40 text-[10px] tracking-[0.5em] uppercase"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              transition={{ delay: 0.25, duration: 0.35 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
             >
               LIDINC
             </motion.p>
-          </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+// ── Video Modal ───────────────────────────────────────────────────────────────
+function VideoModal({ src, onClose }: { src: string; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/92 backdrop-blur-sm p-4"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="relative w-full max-w-5xl aspect-video"
+        initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.92, opacity: 0 }}
+        transition={{ type: 'spring', damping: 26 }}
+        onClick={e => e.stopPropagation()}
+      >
+        <video src={src} autoPlay controls className="w-full h-full rounded-2xl object-cover bg-black" />
+        <button type="button" onClick={onClose}
+          className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/60 hover:text-white transition-colors">
+          <X size={14} />
+        </button>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ── Section Progress ──────────────────────────────────────────────────────────
+function SectionProgress({ idx, visible }: { idx: number; visible: boolean }) {
+  const total = 5
+  const current = Math.max(0, idx - 1)
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
+          className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center gap-2"
+        >
+          {Array.from({ length: total }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="w-[2px] rounded-full"
+              animate={{
+                height: i === current ? 22 : 5,
+                backgroundColor: i <= current ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.15)',
+              }}
+              transition={{ duration: 0.35 }}
+            />
+          ))}
         </motion.div>
       )}
     </AnimatePresence>
@@ -847,6 +939,7 @@ export default function App() {
   const [detailSection, setDetailSection] = useState<SectionData | null>(null)
   const [contactSection, setContactSection] = useState<SectionData | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
   const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
@@ -982,6 +1075,7 @@ export default function App() {
       <RevealHero
         onContact={() => setContactSection(SECTIONS[0])}
         onScrollToServices={scrollToServices}
+        onPlayVideo={() => setShowVideo(true)}
       />
 
       {/* ── Service tabs panel ── */}
@@ -1033,10 +1127,13 @@ export default function App() {
       {/* ── AI Chat Widget ── */}
       <ChatWidget />
 
+      {/* ── Section progress dots ── */}
+      <SectionProgress idx={sectionIdx} visible={inServices} />
+
       {/* ── Scroll progress bar ── */}
       <ScrollProgress />
 
-      {/* ── Cursor trail (service sections only) ── */}
+      {/* ── Cursor trail ── */}
       <CursorTrail active={inServices} />
 
       {/* ── Preloader ── */}
@@ -1044,6 +1141,11 @@ export default function App() {
 
       {/* ── Scroll to top ── */}
       <ScrollToTop visible={showTopBtn} />
+
+      {/* ── Video modal ── */}
+      <AnimatePresence>
+        {showVideo && <VideoModal src={VIDEO_SRC} onClose={() => setShowVideo(false)} />}
+      </AnimatePresence>
 
     </div>
   )

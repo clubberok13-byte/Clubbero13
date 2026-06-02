@@ -3,6 +3,24 @@
 
 * { font-family: 'DM Sans', system-ui, sans-serif; }
 
+@keyframes shimmer-sweep {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(300%)  skewX(-15deg); }
+}
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
+  transform: translateX(-100%) skewX(-15deg);
+  animation: shimmer-sweep 2.8s ease infinite;
+  pointer-events: none;
+}
+
 html {
   overflow-y: scroll;
 }

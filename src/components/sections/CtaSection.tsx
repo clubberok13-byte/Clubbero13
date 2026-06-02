@@ -84,7 +84,7 @@ export default function CtaSection({ onContact, onScrollTo }: {
         >
           <motion.button
             type="button" onClick={onContact}
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-full text-white text-[13px] font-semibold"
+            className="shimmer-btn inline-flex items-center gap-2 px-7 py-3 rounded-full text-white text-[13px] font-semibold"
             style={{
               background: 'linear-gradient(135deg, #3b82f6, #22d3ee, #a78bfa, #3b82f6)',
               backgroundSize: '300% 300%',
