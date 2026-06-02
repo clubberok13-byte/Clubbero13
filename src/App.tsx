@@ -461,13 +461,13 @@ function RevealHero({ onContact, onScrollToServices, onPlayVideo }: {
 
       {/* Floating stat badges */}
       {[
-        { text: '50+ проектов',  x: '68%', y: '32%', delay: 1.7 },
-        { text: '150+ клиентов', x: '74%', y: '52%', delay: 1.95 },
-        { text: '3 года опыта',  x: '65%', y: '68%', delay: 2.15 },
+        { text: '50+ проектов',              x: '68%', y: '32%', delay: 1.7 },
+        { text: '150+ клиентов',             x: '74%', y: '52%', delay: 1.95 },
+        { text: '5+ лет опыта работы с ИИ',  x: '62%', y: '68%', delay: 2.15 },
       ].map(b => (
         <motion.div
           key={b.text}
-          className="absolute hidden md:flex items-center gap-1.5 bg-white/8 backdrop-blur-md border border-white/12 rounded-full px-3 py-1.5 text-white/65 text-[11px] font-medium z-20 select-none"
+          className="absolute hidden md:flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 rounded-full px-4 py-2 text-white/80 text-[13px] font-medium z-20 select-none"
           style={{ left: b.x, top: b.y }}
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1, y: [0, -7, 0] }}
