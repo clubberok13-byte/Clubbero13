@@ -1,13 +1,12 @@
 import './index.css'
+import Lenis from 'lenis'
 import { GlowCard } from './components/ui/spotlight-card'
 import ChatWidget from './components/ui/chat-widget'
 import { ContentBg, DevelopmentBg, BusinessBg, EducationBg } from './components/ui/background-paper-shaders'
 import AboutSection from './components/sections/AboutSection'
-import CasesSection from './components/sections/CasesSection'
-import TestimonialsSection from './components/sections/TestimonialsSection'
+import CasesTestimonialsSection from './components/sections/CasesTestimonialsSection'
 import HowWeWorkSection from './components/sections/HowWeWorkSection'
 import CtaSection from './components/sections/CtaSection'
-import ServicesFilterSection from './components/sections/ServicesFilterSection'
 import { useState, useRef, useEffect, useCallback } from 'react'
 
 import { motion, AnimatePresence, useMotionValue, useSpring, useScroll, useTransform, useInView } from 'framer-motion'
@@ -63,7 +62,7 @@ const SECTIONS: SectionData[] = [
     details: ['Видеоролики с AI-персонажами', 'Озвучка на любом языке без студии', 'Автоматические субтитры и перевод', 'Контент-план и автопубликация', 'AI-копирайтинг для соцсетей'],
   },
   {
-    id: 'development', category: '02 / AI Development',
+    id: 'development', category: '02 / AI Автоматизация',
     title: 'Разрабатываем\nумные\nрешения',
     description: 'Фотообработка, 3D-моделирование, сайты и парсинг данных',
     image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1920&q=85&auto=format&fit=crop',
@@ -77,7 +76,7 @@ const SECTIONS: SectionData[] = [
     details: ['AI-инструменты под ключ', 'Парсинг сайтов и маркетплейсов', 'Автоматизация рутинных задач', '3D-моделирование с AI', 'Пакетная обработка фотографий'],
   },
   {
-    id: 'business', category: '03 / AI Business',
+    id: 'business', category: '03 / AI для Бизнеса',
     title: 'Масштабируем\nваш\nбизнес',
     description: 'Умные ассистенты и автоматизация бизнес-процессов',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=85&auto=format&fit=crop',
@@ -91,7 +90,7 @@ const SECTIONS: SectionData[] = [
     details: ['Корпоративные чат-боты', 'Интеграция с Telegram, Telegram, Bitrix', 'Автоматизация клиентского сервиса', 'AI-аналитика продаж и маркетинга', 'Голосовые помощники на телефонию'],
   },
   {
-    id: 'education', category: '04 / AI Education',
+    id: 'education', category: '04 / AI Обучение',
     title: 'Обучаем\nработать\nс AI',
     description: 'Корпоративное обучение, воркшопы и лекции по AI',
     image: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=1920&q=85&auto=format&fit=crop',
@@ -144,7 +143,7 @@ function ContactForm({ defaultService, onClose }: { defaultService?: string; onC
   const [error, setError] = useState('')
   const [form, setForm] = useState({ name: '', contact: '', message: '', service: defaultService ?? SECTIONS[0].category })
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -277,11 +276,41 @@ function DetailModal({ section, onClose, onContact }: { section: SectionData; on
   )
 }
 
+// ── Rotating word ────────────────────────────────────────────────────────────
+const ROTATE_WORDS = ['бизнеса —', 'контента —', 'команды —', 'процессов —']
+
+function RotatingWord() {
+  const [idx, setIdx] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setIdx(i => (i + 1) % ROTATE_WORDS.length), 2800)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <AnimatePresence mode="wait">
+      <motion.span
+        key={idx}
+        className="text-gradient-anim"
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        style={{ display: 'inline-block' }}
+      >
+        {ROTATE_WORDS[idx]}
+      </motion.span>
+    </AnimatePresence>
+  )
+}
+
 // ── Reveal Hero ───────────────────────────────────────────────────────────────
 function RevealHero({ onContact, onScrollToServices }: {
   onContact: () => void
   onScrollToServices: () => void
 }) {
+  const heroRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+  const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '-18%'])
+
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -290,7 +319,7 @@ function RevealHero({ onContact, onScrollToServices }: {
   }, [])
 
   return (
-    <div className="relative h-screen overflow-hidden bg-[#f0f0ee] snap-start" style={{ scrollSnapStop: 'always' }}>
+    <div ref={heroRef} className="relative h-screen overflow-hidden bg-[#f0f0ee]">
       <video
         src={VIDEO_SRC}
         autoPlay muted loop playsInline
@@ -310,22 +339,29 @@ function RevealHero({ onContact, onScrollToServices }: {
         <FloatingOrbs accent={HERO.accent} />
       </motion.div>
 
-      {/* Top-left content */}
-      <div className="absolute inset-0 z-10 flex flex-col justify-start pt-24 sm:pt-28 px-6 sm:px-12 md:px-20 lg:px-28">
+      {/* Top-left content — parallax */}
+      <motion.div
+        className="absolute inset-0 z-10 flex flex-col justify-start pt-24 sm:pt-28 px-6 sm:px-12 md:px-20 lg:px-28"
+        style={{ y: contentY }}
+      >
         <div className="max-w-2xl">
-          {/* Badge */}
+          {/* Badge with pulsing dot */}
           <motion.a
             href="#"
             onClick={e => { e.preventDefault(); onScrollToServices() }}
-            className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-gradient-anim hover:opacity-80 transition-opacity mb-5 group"
+            className="inline-flex items-center gap-2 text-[11.5px] font-medium text-gradient-anim hover:opacity-80 transition-opacity mb-5 group"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 0.85, duration: 0.5 }}
           >
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+            </span>
             {HERO.badge}
             <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">→</span>
           </motion.a>
 
-          {/* Title — big */}
+          {/* Title — big with rotating word on line 1 */}
           <h1
             className="text-[1.8rem] sm:text-[2.2rem] md:text-[2.6rem] lg:text-[3rem] leading-[1.12] text-white tracking-tight mb-6"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
@@ -337,7 +373,7 @@ function RevealHero({ onContact, onScrollToServices }: {
                   animate={{ y: '0%' }}
                   transition={{ delay: 0.95 + i * 0.1, duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  {line}
+                  {i === 1 ? <>Вашего <RotatingWord /></> : line}
                 </motion.div>
               </div>
             ))}
@@ -366,7 +402,7 @@ function RevealHero({ onContact, onScrollToServices }: {
             </MagneticButton>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Scroll hint */}
       <AnimatePresence>
@@ -492,7 +528,7 @@ function CountUp({ to }: { to: number }) {
 // ── Infinite Marquee ──────────────────────────────────────────────────────────
 function Marquee() {
   const items = [
-    'AI Content', 'AI Development', 'AI Business', 'AI Education',
+    'AI Content', 'AI Автоматизация', 'AI для Бизнеса', 'AI Обучение',
     'Автоматизация', 'Контент-завод', 'Чат-боты', 'LIDINC',
   ]
   const doubled = [...items, ...items, ...items]
@@ -515,58 +551,6 @@ function Marquee() {
   )
 }
 
-// ── Text Scramble hook ────────────────────────────────────────────────────────
-function useTextScramble(text: string, active: boolean) {
-  const [output, setOutput] = useState(text)
-  const CHARS = '!<>-_\\/[]{}=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  useEffect(() => {
-    if (!active) return
-    let frame = 0
-    const total = 20
-    const id = setInterval(() => {
-      frame++
-      setOutput(text.split('').map((ch, i) => {
-        if (ch === ' ' || ch === '/') return ch
-        if (frame >= Math.floor((i / text.length) * total) + 4) return ch
-        return CHARS[Math.floor(Math.random() * CHARS.length)]
-      }).join(''))
-      if (frame > total + 4) clearInterval(id)
-    }, 38)
-    return () => clearInterval(id)
-  }, [active, text])
-  return output
-}
-
-// ── Split Text + Clip-path Reveal ────────────────────────────────────────────
-const lineVariants = {
-  hidden: { y: '108%', opacity: 0 },
-  visible: (i: number) => ({
-    y: '0%',
-    opacity: 1,
-    transition: { delay: 0.08 + i * 0.1, duration: 0.72, ease: [0.16, 1, 0.3, 1] as const },
-  }),
-}
-
-function SplitTitle({ text, className, style }: {
-  text: string; className?: string; style?: React.CSSProperties
-}) {
-  const lines = text.split('\n')
-  return (
-    <motion.div
-      className={className}
-      style={style}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-80px' }}
-    >
-      {lines.map((line, i) => (
-        <div key={i} style={{ overflow: 'hidden', lineHeight: '1.08' }}>
-          <motion.div custom={i} variants={lineVariants}>{line}</motion.div>
-        </div>
-      ))}
-    </motion.div>
-  )
-}
 
 // ── Custom Cursor Blob ────────────────────────────────────────────────────────
 function CustomCursor({ accent }: { accent: string }) {
@@ -594,115 +578,100 @@ function CustomCursor({ accent }: { accent: string }) {
   )
 }
 
-// ── Service Panel ─────────────────────────────────────────────────────────────
-function Panel({ section, onDetail, onContact }: {
-  section: SectionData; onDetail: () => void; onContact: () => void
-}) {
-  const panelRef = useRef<HTMLDivElement>(null)
-  const [scrambleActive, setScrambleActive] = useState(false)
-  const scrambledCategory = useTextScramble(section.category, scrambleActive)
-  // Parallax background
-  const { scrollYProgress } = useScroll({ target: panelRef, offset: ['start end', 'end start'] })
-  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '-18%'])
 
-  // Trigger scramble when panel enters view
-  useEffect(() => {
-    const el = panelRef.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setScrambleActive(true) },
-      { threshold: 0.35 }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
+// ── Service Tabs Panel ────────────────────────────────────────────────────────
+function ServiceTabsPanel({ activeTabIdx, onTabChange, onDetail, onContact }: {
+  activeTabIdx: number
+  onTabChange: (idx: number) => void
+  onDetail: (s: SectionData) => void
+  onContact: (s: SectionData) => void
+}) {
+  const section = SECTIONS[activeTabIdx]
 
   return (
-    <div ref={panelRef} className="relative overflow-hidden snap-start" style={{ width: '100vw', height: '100vh', scrollSnapStop: 'always' as const }}>
-
-      {/* Background */}
-      {section.id === 'content'     ? <ContentBg /> :
-       section.id === 'development' ? <DevelopmentBg /> :
-       section.id === 'business'    ? <BusinessBg /> :
-       section.id === 'education'   ? <EducationBg /> : (
-        <motion.img
-          src={section.image} alt=""
-          className="absolute w-full object-cover pointer-events-none"
-          style={{ height: '130%', top: '-15%', y: bgY }}
-        />
-      )}
+    <div className="relative overflow-hidden" style={{ width: '100vw', height: '100vh' }}>
+      {SECTIONS.map((s, i) => (
+        <motion.div
+          key={s.id}
+          className="absolute inset-0"
+          animate={{ opacity: i === activeTabIdx ? 1 : 0 }}
+          transition={{ duration: 0.45 }}
+        >
+          {s.id === 'content'     ? <ContentBg /> :
+           s.id === 'development' ? <DevelopmentBg /> :
+           s.id === 'business'    ? <BusinessBg /> :
+           s.id === 'education'   ? <EducationBg /> : null}
+        </motion.div>
+      ))}
       <div className="absolute inset-0 bg-black/38" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent" />
       <FloatingOrbs accent={section.accent} />
 
+      {/* Tab bar */}
+      <div className="absolute top-20 sm:top-24 left-0 right-0 z-20 flex items-center justify-center gap-1 px-4">
+        {SECTIONS.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => onTabChange(i)}
+            className={`text-[11px] tracking-[0.18em] uppercase px-4 py-1.5 rounded-full transition-all duration-300 border ${
+              activeTabIdx === i
+                ? 'bg-white/12 text-white border-white/25 backdrop-blur-sm'
+                : 'text-white/35 border-transparent hover:text-white/60'
+            }`}
+          >
+            {s.category.split(' / ')[1]}
+          </button>
+        ))}
+      </div>
 
-      {/* Top content */}
-      <div className="relative z-10 h-full flex flex-col justify-start pt-24 sm:pt-28 px-6 sm:px-12 md:px-20 lg:px-28">
-        <div className="flex items-start justify-between w-full">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={section.id}
+          className="relative z-10 h-full flex flex-col justify-start pt-36 sm:pt-40 px-6 sm:px-12 md:px-20 lg:px-28"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -18 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="flex items-start justify-between w-full">
+            <div className="max-w-xs shrink-0">
+              <p className="text-[11.5px] font-medium mb-3" style={{ color: section.accent }}>
+                {section.category}
+              </p>
+              <h2
+                className="text-[1.8rem] sm:text-[2.2rem] md:text-[2.6rem] lg:text-[3rem] leading-[1.12] text-white tracking-tight mb-3 whitespace-pre-line"
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
+              >
+                {section.title}
+              </h2>
+              <p className="text-[13px] text-white/60 font-normal mb-3">{section.description}</p>
+              <p className="text-[12px] text-white/35 mb-4">
+                от <CountUp to={parseInt(section.price.replace(/\D/g, ''), 10)} /> ₽ / проект
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <MagneticButton>
+                  <button type="button" onClick={() => onDetail(section)}
+                    className="inline-flex items-center gap-2 text-[13px] font-medium text-white/50 border border-white/20 rounded-full px-5 py-2.5 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-200 group backdrop-blur-sm">
+                    Подробнее
+                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-60 group-hover:opacity-100">→</span>
+                  </button>
+                </MagneticButton>
+                <MagneticButton>
+                  <button type="button" onClick={() => onContact(section)}
+                    className="inline-flex items-center gap-2 text-[13px] font-medium text-white/25 border border-white/10 rounded-full px-5 py-2.5 hover:text-white/60 hover:border-white/25 transition-all duration-200 group backdrop-blur-sm">
+                    Заказать
+                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-40 group-hover:opacity-70">→</span>
+                  </button>
+                </MagneticButton>
+              </div>
+            </div>
 
-          {/* Left: main text */}
-          <div className="max-w-xs shrink-0">
-            <motion.p
-              className="text-[11.5px] font-medium text-blue-400 mb-3"
-              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-80px' }}
-              transition={{ delay: 0.1 }}
-            >
-              {scrambledCategory}
-            </motion.p>
-
-            <SplitTitle
-              text={section.title}
-              className="text-[1.8rem] sm:text-[2.2rem] md:text-[2.6rem] lg:text-[3rem] leading-[1.12] text-white tracking-tight mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
-            />
-
-            <motion.p
-              className="text-[13px] text-white/60 font-normal mb-3"
-              initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
-              transition={{ delay: 0.35 }}
-            >
-              {section.description}
-            </motion.p>
-
-            <motion.p
-              className="text-[12px] text-white/35 mb-4"
-              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-80px' }}
-              transition={{ delay: 0.42 }}
-            >
-              от <CountUp to={parseInt(section.price.replace(/\D/g, ''), 10)} /> ₽ / проект
-            </motion.p>
-
-            <motion.div
-              className="flex flex-wrap gap-3"
-              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-80px' }}
-              transition={{ delay: 0.5 }}
-            >
-              <MagneticButton>
-                <button type="button" onClick={onDetail}
-                  className="inline-flex items-center gap-2 text-[13px] font-medium text-white/50 border border-white/20 rounded-full px-5 py-2.5 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-200 group backdrop-blur-sm">
-                  Подробнее
-                  <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-60 group-hover:opacity-100">→</span>
-                </button>
-              </MagneticButton>
-              <MagneticButton>
-                <button type="button" onClick={onContact}
-                  className="inline-flex items-center gap-2 text-[13px] font-medium text-white/25 border border-white/10 rounded-full px-5 py-2.5 hover:text-white/60 hover:border-white/25 transition-all duration-200 group backdrop-blur-sm">
-                  Заказать
-                  <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-40 group-hover:opacity-70">→</span>
-                </button>
-              </MagneticButton>
-            </motion.div>
-          </div>
-
-          {/* Right: GlowCards */}
-          <div className="hidden md:flex flex-col gap-3 w-[300px] lg:w-[340px] shrink-0">
-            {section.services.map((svc, i) => {
-              const Icon = svc.icon
-              return (
-                <motion.div key={svc.name}
-                  initial={{ opacity: 0, x: 36 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-80px' }}
-                  transition={{ delay: 0.2 + i * 0.12, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}>
-                  <GlowCard glowColor="blue" customSize className="w-full py-4 px-5 flex items-start gap-4">
+            <div className="hidden md:flex flex-col gap-3 w-[300px] lg:w-[340px] shrink-0">
+              {section.services.map((svc) => {
+                const Icon = svc.icon
+                return (
+                  <GlowCard key={svc.name} glowColor="blue" customSize className="w-full py-4 px-5 flex items-start gap-4">
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 bg-blue-500/10 border border-blue-400/20">
                       <Icon size={16} className="text-blue-400" />
                     </div>
@@ -711,13 +680,12 @@ function Panel({ section, onDetail, onContact }: {
                       <p className="text-white/40 text-[12px] leading-snug">{svc.desc}</p>
                     </div>
                   </GlowCard>
-                </motion.div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
-
-        </div>
-      </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   )
 }
@@ -766,6 +734,26 @@ function CursorTrail({ active }: { active: boolean }) {
         />
       ))}
     </>
+  )
+}
+
+// ── Grain Overlay ─────────────────────────────────────────────────────────────
+function GrainOverlay() {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 9997 }} aria-hidden="true">
+      <div
+        style={{
+          position: 'absolute',
+          inset: '-150px',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '256px 256px',
+          opacity: 0.055,
+          mixBlendMode: 'overlay' as const,
+          animation: 'grain-shift 0.8s steps(1) infinite',
+        }}
+      />
+    </div>
   )
 }
 
@@ -827,52 +815,43 @@ function ScrollToTop({ visible }: { visible: boolean }) {
 export default function App() {
   const [loaded, setLoaded] = useState(false)
   const [showTopBtn, setShowTopBtn] = useState(false)
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [serviceTab, setServiceTab] = useState(0)
   const [inServices, setInServices] = useState(false)
-  const [inOutro, setInOutro] = useState(false)
   const [detailSection, setDetailSection] = useState<SectionData | null>(null)
   const [contactSection, setContactSection] = useState<SectionData | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 900)
     return () => clearTimeout(t)
   }, [])
 
-  const heroHeight = useRef(0)
-  useEffect(() => { heroHeight.current = window.innerHeight }, [])
+  useEffect(() => {
+    const lenis = new Lenis({ duration: 1.25, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) })
+    lenisRef.current = lenis
+    let rafId: number
+    const raf = (time: number) => { lenis.raf(time); rafId = requestAnimationFrame(raf) }
+    rafId = requestAnimationFrame(raf)
+    return () => { cancelAnimationFrame(rafId); lenis.destroy(); lenisRef.current = null }
+  }, [])
 
   useEffect(() => {
     const onScroll = () => {
-      const hero = window.innerHeight
-      const inSvc = window.scrollY >= hero - 30
-      const outro = window.scrollY >= hero + SECTIONS.length * window.innerHeight - 30
-      setInServices(inSvc)
-      setInOutro(outro)
+      setInServices(window.scrollY >= window.innerHeight - 30)
       setShowTopBtn(window.scrollY > window.innerHeight / 2)
-
-      if (inSvc) {
-        const scrollInSvc = window.scrollY - hero
-        const idx = Math.floor(scrollInSvc / window.innerHeight)
-        setActiveIdx(Math.max(0, Math.min(idx, SECTIONS.length - 1)))
-      }
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const scrollToService = useCallback((idx: number) => {
-    window.scrollTo({ top: window.innerHeight + idx * window.innerHeight, behavior: 'smooth' })
-    setMenuOpen(false)
-  }, [])
-
   const scrollToServices = useCallback(() => {
-    window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })
+    lenisRef.current?.scrollTo(window.innerHeight)
   }, [])
 
   const scrollToHero = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    lenisRef.current?.scrollTo(0)
     setMenuOpen(false)
   }, [])
 
@@ -880,6 +859,7 @@ export default function App() {
   return (
     <div className="bg-[#f0f0ee] text-gray-900">
       <SvgDefs />
+      <GrainOverlay />
 
       {/* ── Navbar — two-pill, context-aware ── */}
       <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-center pt-4 sm:pt-6 px-4 sm:px-8 gap-2 sm:gap-3">
@@ -949,7 +929,7 @@ export default function App() {
             </motion.button>
             {SECTIONS.map((s, i) => (
               <motion.button key={s.id} type="button"
-                onClick={() => { scrollToServices(); setTimeout(() => scrollToService(i), 400) }}
+                onClick={() => { setServiceTab(i); scrollToServices(); setMenuOpen(false) }}
                 initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: (i + 1) * 0.06 }}
                 className="text-[1.3rem] font-semibold text-gray-400 hover:text-gray-900 transition-colors">
                 {s.category}
@@ -975,36 +955,23 @@ export default function App() {
         onScrollToServices={scrollToServices}
       />
 
-      {/* ── Service panels (vertical) ── */}
-      {SECTIONS.map(s => (
-        <Panel key={s.id} section={s}
-          onDetail={() => setDetailSection(s)}
-          onContact={() => setContactSection(s)} />
-      ))}
+      {/* ── Service tabs panel ── */}
+      <ServiceTabsPanel
+        activeTabIdx={serviceTab}
+        onTabChange={setServiceTab}
+        onDetail={(s) => setDetailSection(s)}
+        onContact={(s) => setContactSection(s)}
+      />
 
       {/* ── Outro sections ── */}
-      <ServicesFilterSection />
       <AboutSection />
-      <CasesSection />
-      <TestimonialsSection />
+      <CasesTestimonialsSection />
       <HowWeWorkSection />
-      <CtaSection onContact={() => setContactSection(SECTIONS[0])} />
+      <CtaSection
+        onContact={() => setContactSection(SECTIONS[0])}
+        onScrollTo={(idx) => lenisRef.current?.scrollTo(idx * window.innerHeight)}
+      />
 
-      {/* ── Service dots (only in services section) ── */}
-      <AnimatePresence>
-        {inServices && !inOutro && (
-          <motion.div
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2">
-            {SECTIONS.map((s, i) => (
-              <button key={s.id} type="button" onClick={() => scrollToService(i)} aria-label={s.category}
-                className="rounded-full transition-all duration-300"
-                style={{ height: 5, width: activeIdx === i ? 22 : 5, backgroundColor: activeIdx === i ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.2)' }}
-              />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
 
       {/* ── Custom cursor (service panels only) ── */}

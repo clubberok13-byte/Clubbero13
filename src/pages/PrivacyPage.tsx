@@ -71,7 +71,7 @@ export default function PrivacyPage() {
           style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
           Политика конфиденциальности
         </h1>
-        <p className="text-white/30 text-[13px] mb-12">Последнее обновление: июнь 2025</p>
+        <p className="text-white/30 text-[13px] mb-12">Последнее обновление: июнь 2026</p>
 
         <div className="space-y-10">
           {SECTIONS.map(s => (
@@ -83,7 +83,7 @@ export default function PrivacyPage() {
         </div>
 
         <div className="mt-14 pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <p className="text-white/25 text-[12px]">© 2025 LIDINC. Все права защищены.</p>
+          <p className="text-white/25 text-[12px]">© 2026 LIDINC. Все права защищены.</p>
           <div className="flex gap-5">
             <a href={TELEGRAM} target="_blank" rel="noopener noreferrer"
               className="text-white/35 hover:text-white/60 text-[12px] transition-colors">Telegram</a>

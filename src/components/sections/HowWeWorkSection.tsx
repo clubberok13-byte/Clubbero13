@@ -36,8 +36,8 @@ export default function HowWeWorkSection() {
   return (
     <div
       ref={ref}
-      className="relative snap-start overflow-hidden flex flex-col justify-center"
-      style={{ width: '100vw', height: '100vh', scrollSnapStop: 'always', backgroundColor: '#060606' }}
+      className="relative overflow-hidden flex flex-col justify-center"
+      style={{ width: '100vw', height: '100vh', backgroundColor: '#060606' }}
     >
       <FloatingOrbs accent="#22d3ee" />
       <div className="absolute inset-0 bg-gradient-to-bl from-cyan-950/20 via-transparent to-transparent pointer-events-none" />

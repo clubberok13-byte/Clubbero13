@@ -6,14 +6,24 @@ const LOGOS = ['FitLife', 'SkyStore', 'DevGroup', 'RealTech', 'MediaHub', 'ProBr
 const TELEGRAM = 'https://t.me/AlexSTETSKIY'
 const EMAIL = 'clubberok13@gmail.com'
 
-const NAV_COLS = [
+const NAV_COLS: { title: string; links: { label: string; idx: number }[] }[] = [
   {
     title: 'Услуги',
-    links: ['AI Content', 'AI Development', 'AI Business', 'AI Education'],
+    links: [
+      { label: 'AI Content', idx: 1 },
+      { label: 'AI Автоматизация', idx: 1 },
+      { label: 'AI для Бизнеса', idx: 1 },
+      { label: 'AI Обучение', idx: 1 },
+    ],
   },
   {
     title: 'Компания',
-    links: ['О нас', 'Кейсы', 'Отзывы', 'Как мы работаем'],
+    links: [
+      { label: 'О нас', idx: 2 },
+      { label: 'Кейсы', idx: 3 },
+      { label: 'Отзывы', idx: 3 },
+      { label: 'Как мы работаем', idx: 4 },
+    ],
   },
 ]
 
@@ -25,11 +35,14 @@ function TelegramIcon({ size = 14 }: { size?: number }) {
   )
 }
 
-export default function CtaSection({ onContact }: { onContact: () => void }) {
+export default function CtaSection({ onContact, onScrollTo }: {
+  onContact: () => void
+  onScrollTo?: (idx: number) => void
+}) {
   return (
     <div
-      className="relative snap-start overflow-hidden flex flex-col"
-      style={{ width: '100vw', height: '100vh', scrollSnapStop: 'always', backgroundColor: '#050505' }}
+      className="relative overflow-hidden flex flex-col"
+      style={{ width: '100vw', height: '100vh', backgroundColor: '#050505' }}
     >
       <FloatingOrbs accent="#3b82f6" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 pointer-events-none" />
@@ -119,8 +132,14 @@ export default function CtaSection({ onContact }: { onContact: () => void }) {
                 <p className="text-white/30 text-[10px] tracking-[0.25em] uppercase mb-3">{col.title}</p>
                 <ul className="space-y-2">
                   {col.links.map(link => (
-                    <li key={link}>
-                      <span className="text-white/45 text-[12px] hover:text-white/70 transition-colors cursor-default">{link}</span>
+                    <li key={link.label}>
+                      <button
+                        type="button"
+                        onClick={() => onScrollTo?.(link.idx)}
+                        className="text-white/45 text-[12px] hover:text-white/70 transition-colors"
+                      >
+                        {link.label}
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -150,7 +169,7 @@ export default function CtaSection({ onContact }: { onContact: () => void }) {
 
         {/* Copyright bar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-6 border-t border-white/[0.05]">
-          <p className="text-white/20 text-[11px]">© 2025 LIDINC. Все права защищены.</p>
+          <p className="text-white/20 text-[11px]">© 2026 LIDINC. Все права защищены.</p>
           <a href="/privacy"
             onClick={e => { e.preventDefault(); window.history.pushState({}, '', '/privacy'); window.dispatchEvent(new PopStateEvent('popstate')) }}
             className="text-white/15 hover:text-white/35 text-[11px] transition-colors">

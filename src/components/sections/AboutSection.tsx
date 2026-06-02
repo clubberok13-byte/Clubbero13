@@ -2,13 +2,19 @@ import { motion, useInView } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import { FloatingOrbs, SplitTitle, useScrambleOnView } from '../ui/animations'
 
-interface Stat { value: number; suffix: string; label: string }
+interface Stat { value: number; suffix: string; label: string; bar: number }
 
 const STATS: Stat[] = [
-  { value: 50,  suffix: '+', label: 'проектов' },
-  { value: 150, suffix: '+', label: 'клиентов' },
-  { value: 3,   suffix: '',  label: 'года опыта' },
-  { value: 4,   suffix: '',  label: 'направления' },
+  { value: 50,  suffix: '+', label: 'проектов',    bar: 82 },
+  { value: 150, suffix: '+', label: 'клиентов',    bar: 91 },
+  { value: 3,   suffix: '',  label: 'года опыта',  bar: 60 },
+  { value: 4,   suffix: '',  label: 'направления', bar: 100 },
+]
+
+const TOOLS = [
+  'ChatGPT', 'Midjourney', 'Runway ML', 'HeyGen', 'ElevenLabs',
+  'n8n / Make', 'GPT-4o', 'Stable Diffusion', 'Telegram Bot', 'Claude',
+  'Perplexity', 'Kling AI', 'Figma AI', 'Whisper', 'Sora',
 ]
 
 function StatNum({ stat }: { stat: Stat }) {
@@ -33,12 +39,13 @@ function StatNum({ stat }: { stat: Stat }) {
 
 export default function AboutSection() {
   const { ref, scrambled } = useScrambleOnView('О нас')
+  const doubled = [...TOOLS, ...TOOLS]
 
   return (
     <div
       ref={ref}
-      className="relative snap-start overflow-hidden flex flex-col justify-center"
-      style={{ width: '100vw', height: '100vh', scrollSnapStop: 'always', backgroundColor: '#0a0a0a' }}
+      className="relative overflow-hidden flex flex-col justify-center"
+      style={{ width: '100vw', height: '100vh', backgroundColor: '#0a0a0a' }}
     >
       <FloatingOrbs accent="#3b82f6" />
       <div className="absolute inset-0 bg-gradient-to-br from-blue-950/20 via-transparent to-purple-950/15 pointer-events-none" />
@@ -54,12 +61,12 @@ export default function AboutSection() {
 
         <SplitTitle
           text={'Делаем AI\nдоступным\nдля бизнеса'}
-          className="text-[2rem] sm:text-[2.8rem] md:text-[3.5rem] text-white tracking-tight mb-6"
+          className="text-[2rem] sm:text-[2.8rem] md:text-[3.5rem] text-white tracking-tight mb-5"
           style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
         />
 
         <motion.p
-          className="text-white/50 text-[14px] sm:text-[15px] leading-relaxed max-w-lg mb-14"
+          className="text-white/50 text-[14px] sm:text-[15px] leading-relaxed max-w-lg mb-10"
           initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           transition={{ delay: 0.35 }}
         >
@@ -80,11 +87,41 @@ export default function AboutSection() {
               >
                 <StatNum stat={stat} />
               </p>
-              <p className="text-white/35 text-[12px] tracking-wide">{stat.label}</p>
+              <p className="text-white/35 text-[12px] tracking-wide mb-2">{stat.label}</p>
+              <div className="h-px w-full bg-white/10 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: 'linear-gradient(to right, #60a5fa, #22d3ee)' }}
+                  initial={{ width: '0%' }}
+                  whileInView={{ width: `${stat.bar}%` }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.5 + i * 0.1, duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </div>
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* Tools marquee strip */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 z-10 overflow-hidden border-t border-white/[0.06] py-3"
+        initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+        transition={{ delay: 0.6 }}
+      >
+        <motion.div
+          className="flex whitespace-nowrap"
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
+        >
+          {doubled.map((tool, i) => (
+            <span key={i} className="inline-flex items-center gap-5 text-[11px] tracking-[0.22em] uppercase text-white/25 px-5">
+              {tool}
+              <span className="inline-block w-[3px] h-[3px] rounded-full bg-white/15 shrink-0" />
+            </span>
+          ))}
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

@@ -30,7 +30,6 @@ const BEFORE_AFTER_CSS = `
     inset: calc(var(--border-size) * -1);
     border: var(--border-size) solid transparent;
     border-radius: calc(var(--radius) * 1px);
-    background-attachment: fixed;
     background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
     background-repeat: no-repeat;
     background-position: 50% 50%;
@@ -41,7 +40,7 @@ const BEFORE_AFTER_CSS = `
   [data-glow]::before {
     background-image: radial-gradient(
       calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
-      calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+      calc(var(--lx, 50%) * 1px) calc(var(--ly, 50%) * 1px),
       hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--lightness, 50) * 1%) / var(--border-spot-opacity, 1)),
       transparent 100%
     );
@@ -50,7 +49,7 @@ const BEFORE_AFTER_CSS = `
   [data-glow]::after {
     background-image: radial-gradient(
       calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
-      calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+      calc(var(--lx, 50%) * 1px) calc(var(--ly, 50%) * 1px),
       hsl(0 100% 100% / var(--border-light-opacity, 1)),
       transparent 100%
     );
@@ -86,16 +85,35 @@ export const GlowCard: React.FC<GlowCardProps> = ({
   const { base, spread } = glowColorMap[glowColor];
 
   useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
     const sync = (e: PointerEvent) => {
-      if (!cardRef.current) return;
-      cardRef.current.style.setProperty('--x', e.clientX.toFixed(2));
-      cardRef.current.style.setProperty('--xp', (e.clientX / window.innerWidth).toFixed(2));
-      cardRef.current.style.setProperty('--y', e.clientY.toFixed(2));
-      cardRef.current.style.setProperty('--yp', (e.clientY / window.innerHeight).toFixed(2));
+      const rect = card.getBoundingClientRect();
+      const lx = e.clientX - rect.left;
+      const ly = e.clientY - rect.top;
+      const xp = lx / rect.width;
+      const yp = ly / rect.height;
+      card.style.setProperty('--lx', lx.toFixed(2));
+      card.style.setProperty('--ly', ly.toFixed(2));
+      card.style.setProperty('--xp', xp.toFixed(2));
+      card.style.setProperty('--yp', yp.toFixed(2));
     };
-    document.addEventListener('pointermove', sync);
-    return () => document.removeEventListener('pointermove', sync);
+    card.addEventListener('pointermove', sync);
+    return () => card.removeEventListener('pointermove', sync);
   }, []);
+
+  const handleTiltMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    e.currentTarget.style.transition = 'transform 0.06s ease';
+    e.currentTarget.style.transform = `perspective(900px) rotateX(${(y - 0.5) * -12}deg) rotateY(${(x - 0.5) * 12}deg) scale3d(1.025, 1.025, 1.025)`;
+  };
+
+  const handleTiltLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.transition = 'transform 0.55s ease';
+    e.currentTarget.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+  };
 
   const inlineStyles: React.CSSProperties & Record<string, string | number> = {
     '--base': base,
@@ -111,13 +129,12 @@ export const GlowCard: React.FC<GlowCardProps> = ({
     '--hue': 'calc(var(--base) + (var(--xp, 0) * var(--spread, 0)))',
     backgroundImage: `radial-gradient(
       var(--spotlight-size) var(--spotlight-size) at
-      calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+      calc(var(--lx, 50%) * 1px) calc(var(--ly, 50%) * 1px),
       hsl(var(--hue, 210) 100% 70% / 0.08), transparent
     )`,
     backgroundColor: 'var(--backdrop)',
     backgroundSize: 'calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))',
     backgroundPosition: '50% 50%',
-    backgroundAttachment: 'fixed',
     border: 'var(--border-size) solid var(--backup-border)',
     position: 'relative',
     touchAction: 'none',
@@ -133,6 +150,8 @@ export const GlowCard: React.FC<GlowCardProps> = ({
         data-glow
         style={inlineStyles}
         className={`${customSize ? '' : sizeMap[size]} rounded-2xl relative grid grid-rows-[1fr_auto] shadow-[0_1rem_2rem_-1rem_black] p-4 gap-4 backdrop-blur-[5px] ${className}`}
+        onMouseMove={handleTiltMove}
+        onMouseLeave={handleTiltLeave}
       >
         <div data-glow />
         {children}
