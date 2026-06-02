@@ -6,7 +6,7 @@ import { GlowCard } from '../ui/spotlight-card'
 
 const CASES = [
   {
-    num: '01', category: 'AI Content',
+    num: '01', category: 'AI Контент',
     title: 'Контент-завод для фитнес-бренда',
     desc: 'AI-аватары, автосубтитры, мультиязычная озвучка без студии',
     result: '120 роликов за 2 месяца', accent: '#22d3ee', glow: 'cyan' as const,

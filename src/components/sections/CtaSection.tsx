@@ -10,7 +10,7 @@ const NAV_COLS: { title: string; links: { label: string; idx: number }[] }[] = [
   {
     title: 'Услуги',
     links: [
-      { label: 'AI Content', idx: 1 },
+      { label: 'AI Контент', idx: 1 },
       { label: 'AI Автоматизация', idx: 1 },
       { label: 'AI для Бизнеса', idx: 1 },
       { label: 'AI Обучение', idx: 1 },

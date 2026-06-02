@@ -48,7 +48,7 @@ interface SectionData {
 
 const SECTIONS: SectionData[] = [
   {
-    id: 'content', category: '01 / AI Content',
+    id: 'content', category: '01 / AI Контент',
     title: 'Создаём\nконтент\nбудущего',
     description: 'Фото и видео производство, создание текстов и презентаций, AI-аватары и контент-завод для вашего бренда',
     image: 'https://images.unsplash.com/photo-1536240478700-b869ad10e128?w=1920&q=85&auto=format&fit=crop',
@@ -565,7 +565,7 @@ function CountUp({ to }: { to: number }) {
 // ── Infinite Marquee ──────────────────────────────────────────────────────────
 function Marquee() {
   const items = [
-    'AI Content', 'AI Автоматизация', 'AI для Бизнеса', 'AI Обучение',
+    'AI Контент', 'AI Автоматизация', 'AI для Бизнеса', 'AI Обучение',
     'Автоматизация', 'Контент-завод', 'Чат-боты', 'LIDINC',
   ]
   const doubled = [...items, ...items, ...items]
