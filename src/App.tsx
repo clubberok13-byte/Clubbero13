@@ -653,23 +653,19 @@ function ServiceTabsPanel({ activeTabIdx, onTabChange, onDetail, onContact }: {
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Cards */}
-          <div className="flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 w-full
-                          sm:mx-0 sm:px-0 sm:overflow-x-visible sm:pb-0
-                          sm:grid sm:grid-cols-3 sm:max-w-3xl">
+          <div className="flex flex-col gap-3 w-full max-w-lg">
             {section.services.map((svc) => {
               const Icon = svc.icon
               return (
-                <div key={svc.name} className="shrink-0 w-[260px] sm:w-auto">
-                  <GlowCard glowColor="blue" customSize className="w-full py-5 px-5 flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 bg-blue-500/10 border border-blue-400/20">
-                      <Icon size={18} className="text-blue-400" />
-                    </div>
-                    <div>
-                      <p className="text-white text-[14px] font-medium leading-snug mb-1.5">{svc.name}</p>
-                      <p className="text-white/40 text-[12px] leading-snug">{svc.desc}</p>
-                    </div>
-                  </GlowCard>
-                </div>
+                <GlowCard key={svc.name} glowColor="blue" customSize className="w-full py-4 px-5 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-blue-500/10 border border-blue-400/20">
+                    <Icon size={18} className="text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-white text-[14px] font-medium leading-snug mb-1">{svc.name}</p>
+                    <p className="text-white/40 text-[12px] leading-snug">{svc.desc}</p>
+                  </div>
+                </GlowCard>
               )
             })}
           </div>
