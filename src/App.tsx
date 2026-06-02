@@ -9,7 +9,7 @@ import HowWeWorkSection from './components/sections/HowWeWorkSection'
 import CtaSection from './components/sections/CtaSection'
 import { useState, useRef, useEffect, useCallback } from 'react'
 
-import { motion, AnimatePresence, useMotionValue, useSpring, useScroll, useTransform, useInView } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import {
   Video, Code2, Bot, GraduationCap, X, Play, Zap,
@@ -540,27 +540,6 @@ function FloatingOrbs({ accent }: { accent: string }) {
 }
 
 // ── Count Up ─────────────────────────────────────────────────────────────────
-function CountUp({ to }: { to: number }) {
-  const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-  const [value, setValue] = useState(0)
-
-  useEffect(() => {
-    if (!inView) return
-    let startTime: number | null = null
-    const duration = 1300
-    const step = (ts: number) => {
-      if (!startTime) startTime = ts
-      const progress = Math.min((ts - startTime) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setValue(Math.round(eased * to))
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [inView, to])
-
-  return <span ref={ref}>{value.toLocaleString('ru-RU')}</span>
-}
 
 // ── Infinite Marquee ──────────────────────────────────────────────────────────
 function Marquee() {
@@ -667,61 +646,50 @@ function ServiceTabsPanel({ activeTabIdx, onTabChange, onDetail, onContact }: {
       <AnimatePresence mode="wait">
         <motion.div
           key={section.id}
-          className="relative z-10 h-full flex flex-col justify-start pt-36 sm:pt-40 px-6 sm:px-12 md:px-20 lg:px-28"
+          className="relative z-10 h-full flex flex-col items-center justify-center pt-28 pb-8 px-6 sm:px-12 md:px-20 lg:px-28"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -18 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="flex items-start justify-between w-full">
-            <div className="max-w-xs shrink-0">
-              <p className="text-[11.5px] font-medium mb-3" style={{ color: section.accent }}>
-                {section.category}
-              </p>
-              <h2
-                className="text-[1.8rem] sm:text-[2.2rem] md:text-[2.6rem] lg:text-[3rem] leading-[1.12] text-white tracking-tight mb-3 whitespace-pre-line"
-                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
-              >
-                {section.title}
-              </h2>
-              <p className="text-[13px] text-white/60 font-normal mb-3">{section.description}</p>
-              <p className="text-[12px] text-white/35 mb-4">
-                от <CountUp to={parseInt(section.price.replace(/\D/g, ''), 10)} /> ₽ / проект
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <MagneticButton>
-                  <button type="button" onClick={() => onDetail(section)}
-                    className="inline-flex items-center gap-2 text-[13px] font-medium text-white/50 border border-white/20 rounded-full px-5 py-2.5 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-200 group backdrop-blur-sm">
-                    Подробнее
-                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-60 group-hover:opacity-100">→</span>
-                  </button>
-                </MagneticButton>
-                <MagneticButton>
-                  <button type="button" onClick={() => onContact(section)}
-                    className="inline-flex items-center gap-2 text-[13px] font-medium text-white/25 border border-white/10 rounded-full px-5 py-2.5 hover:text-white/60 hover:border-white/25 transition-all duration-200 group backdrop-blur-sm">
-                    Заказать
-                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-40 group-hover:opacity-70">→</span>
-                  </button>
-                </MagneticButton>
-              </div>
-            </div>
-
-            <div className="hidden md:flex flex-col gap-3 w-[300px] lg:w-[340px] shrink-0">
-              {section.services.map((svc) => {
-                const Icon = svc.icon
-                return (
-                  <GlowCard key={svc.name} glowColor="blue" customSize className="w-full py-4 px-5 flex items-start gap-4">
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 bg-blue-500/10 border border-blue-400/20">
-                      <Icon size={16} className="text-blue-400" />
+          {/* Cards */}
+          <div className="flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 w-full
+                          sm:mx-0 sm:px-0 sm:overflow-x-visible sm:pb-0
+                          sm:grid sm:grid-cols-3 sm:max-w-3xl">
+            {section.services.map((svc) => {
+              const Icon = svc.icon
+              return (
+                <div key={svc.name} className="shrink-0 w-[260px] sm:w-auto">
+                  <GlowCard glowColor="blue" customSize className="w-full py-5 px-5 flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 bg-blue-500/10 border border-blue-400/20">
+                      <Icon size={18} className="text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-white text-[13px] font-medium leading-snug mb-1">{svc.name}</p>
+                      <p className="text-white text-[14px] font-medium leading-snug mb-1.5">{svc.name}</p>
                       <p className="text-white/40 text-[12px] leading-snug">{svc.desc}</p>
                     </div>
                   </GlowCard>
-                )
-              })}
-            </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3 mt-8">
+            <MagneticButton>
+              <button type="button" onClick={() => onDetail(section)}
+                className="inline-flex items-center gap-2 text-[13px] font-medium text-white/50 border border-white/20 rounded-full px-5 py-2.5 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-200 group backdrop-blur-sm">
+                Подробнее
+                <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-60 group-hover:opacity-100">→</span>
+              </button>
+            </MagneticButton>
+            <MagneticButton>
+              <button type="button" onClick={() => onContact(section)}
+                className="inline-flex items-center gap-2 text-[13px] font-medium text-white/25 border border-white/10 rounded-full px-5 py-2.5 hover:text-white/60 hover:border-white/25 transition-all duration-200 group backdrop-blur-sm">
+                Заказать
+                <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-40 group-hover:opacity-70">→</span>
+              </button>
+            </MagneticButton>
           </div>
         </motion.div>
       </AnimatePresence>
