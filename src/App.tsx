@@ -87,7 +87,7 @@ const SECTIONS: SectionData[] = [
       { icon: BarChart2, name: 'Аналитика', desc: 'Отчёты и прогнозы на AI' },
     ],
     price: 'от 50 000 ₽',
-    details: ['Корпоративные чат-боты', 'Интеграция с Telegram, Telegram, Bitrix', 'Автоматизация клиентского сервиса', 'AI-аналитика продаж и маркетинга', 'Голосовые помощники на телефонию'],
+    details: ['Корпоративные чат-боты', 'Интеграция с Telegram, WhatsApp, Bitrix', 'Автоматизация клиентского сервиса', 'AI-аналитика продаж и маркетинга', 'Голосовые помощники на телефонию'],
   },
   {
     id: 'education', category: '04 / AI Обучение',
@@ -939,14 +939,14 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const scrollToServices = useCallback(() => {
-    lenisRef.current?.scrollTo(window.innerHeight)
-  }, [])
-
-  const scrollToHero = useCallback(() => {
-    lenisRef.current?.scrollTo(0)
+  const scrollToSection = useCallback((idx: number) => {
+    lenisRef.current?.scrollTo(idx * window.innerHeight)
     setMenuOpen(false)
   }, [])
+
+  const scrollToServices = useCallback(() => scrollToSection(1), [scrollToSection])
+
+  const scrollToHero = useCallback(() => scrollToSection(0), [scrollToSection])
 
 
   return (
@@ -980,9 +980,9 @@ export default function App() {
           transition={{ duration: 0.4 }}
         >
           {[
-            { label: 'О нас', onClick: scrollToHero },
             { label: 'Услуги', onClick: scrollToServices },
-            { label: 'Цены', onClick: scrollToServices },
+            { label: 'О нас', onClick: () => scrollToSection(2) },
+            { label: 'Кейсы', onClick: () => scrollToSection(3) },
             { label: 'Контакты', href: TELEGRAM },
           ].map(item =>
             item.href ? (
@@ -1020,18 +1020,25 @@ export default function App() {
               className="text-[1.3rem] font-semibold text-gray-400 hover:text-gray-900 transition-colors">
               Главная
             </motion.button>
-            {SECTIONS.map((s, i) => (
-              <motion.button key={s.id} type="button"
-                onClick={() => { setServiceTab(i); scrollToServices(); setMenuOpen(false) }}
-                initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: (i + 1) * 0.06 }}
-                className="text-[1.3rem] font-semibold text-gray-400 hover:text-gray-900 transition-colors">
-                {s.category}
-              </motion.button>
-            ))}
-            <motion.button type="button" onClick={scrollToServices}
-              initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.28 }}
+            <motion.button type="button" onClick={() => scrollToSection(1)}
+              initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.06 }}
               className="text-[1.3rem] font-semibold text-gray-400 hover:text-gray-900 transition-colors">
-              Цены
+              Услуги
+            </motion.button>
+            <motion.button type="button" onClick={() => scrollToSection(2)}
+              initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.12 }}
+              className="text-[1.3rem] font-semibold text-gray-400 hover:text-gray-900 transition-colors">
+              О нас
+            </motion.button>
+            <motion.button type="button" onClick={() => scrollToSection(3)}
+              initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.18 }}
+              className="text-[1.3rem] font-semibold text-gray-400 hover:text-gray-900 transition-colors">
+              Кейсы
+            </motion.button>
+            <motion.button type="button" onClick={() => scrollToSection(4)}
+              initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.24 }}
+              className="text-[1.3rem] font-semibold text-gray-400 hover:text-gray-900 transition-colors">
+              Процесс
             </motion.button>
             <motion.a initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}
               href={TELEGRAM} target="_blank" rel="noopener noreferrer"

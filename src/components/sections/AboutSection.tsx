@@ -7,7 +7,7 @@ interface Stat { value: number; suffix: string; label: string; bar: number }
 const STATS: Stat[] = [
   { value: 50,  suffix: '+', label: 'проектов',    bar: 82 },
   { value: 150, suffix: '+', label: 'клиентов',    bar: 91 },
-  { value: 3,   suffix: '',  label: 'года опыта',  bar: 60 },
+  { value: 5,   suffix: '+', label: 'лет с AI',    bar: 75 },
   { value: 4,   suffix: '',  label: 'направления', bar: 100 },
 ]
 
