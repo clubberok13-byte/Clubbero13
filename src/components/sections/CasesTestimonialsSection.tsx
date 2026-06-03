@@ -101,46 +101,73 @@ export default function CasesTestimonialsSection() {
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.28 }}
             >
-              <div
-                ref={constraintRef}
-                className="overflow-hidden"
-                style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-              >
-                <motion.div
-                  drag="x"
-                  dragConstraints={constraintRef}
-                  dragElastic={0.05}
-                  onDragStart={() => setIsDragging(true)}
-                  onDragEnd={() => setIsDragging(false)}
-                  className="flex gap-3 pb-2"
-                  style={{ width: 'max-content' }}
-                >
-                  {CASES.map((c, i) => (
-                    <motion.div key={c.num}
-                      className="w-[260px] sm:w-[280px] shrink-0"
-                      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.08 + i * 0.06, duration: 0.45 }}
-                    >
-                      <GlowCard glowColor={c.glow} customSize className="w-full p-5 flex flex-col justify-between min-h-[190px]">
-                        <div>
-                          <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] tracking-[0.25em] uppercase font-medium" style={{ color: c.accent }}>{c.category}</span>
-                            <span className="text-white/15 text-[11px]">{c.num}</span>
-                          </div>
-                          <p className="text-white text-[14px] font-medium leading-snug mb-2">{c.title}</p>
-                          <p className="text-white/40 text-[12px] leading-relaxed">{c.desc}</p>
+              {/* Desktop: 4-column grid */}
+              <div className="hidden lg:grid lg:grid-cols-4 gap-3">
+                {CASES.map((c, i) => (
+                  <motion.div key={c.num}
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.08 + i * 0.06, duration: 0.45 }}
+                  >
+                    <GlowCard glowColor={c.glow} customSize className="w-full p-5 flex flex-col justify-between min-h-[190px]">
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-[10px] tracking-[0.25em] uppercase font-medium" style={{ color: c.accent }}>{c.category}</span>
+                          <span className="text-white/15 text-[11px]">{c.num}</span>
                         </div>
-                        <div className="pt-3 border-t border-white/[0.08] mt-4">
-                          <p className="text-[13px] font-semibold" style={{ color: c.accent }}>{c.result}</p>
-                        </div>
-                      </GlowCard>
-                    </motion.div>
-                  ))}
-                </motion.div>
+                        <p className="text-white text-[14px] font-medium leading-snug mb-2">{c.title}</p>
+                        <p className="text-white/40 text-[12px] leading-relaxed">{c.desc}</p>
+                      </div>
+                      <div className="pt-3 border-t border-white/[0.08] mt-4">
+                        <p className="text-[13px] font-semibold" style={{ color: c.accent }}>{c.result}</p>
+                      </div>
+                    </GlowCard>
+                  </motion.div>
+                ))}
               </div>
-              <p className="text-white/15 text-[10px] mt-3 tracking-[0.25em] uppercase text-center select-none">
-                drag to explore
-              </p>
+
+              {/* Mobile/tablet: drag carousel */}
+              <div className="lg:hidden">
+                <div
+                  ref={constraintRef}
+                  className="overflow-hidden"
+                  style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+                >
+                  <motion.div
+                    drag="x"
+                    dragConstraints={constraintRef}
+                    dragElastic={0.05}
+                    onDragStart={() => setIsDragging(true)}
+                    onDragEnd={() => setIsDragging(false)}
+                    className="flex gap-3 pb-2"
+                    style={{ width: 'max-content' }}
+                  >
+                    {CASES.map((c, i) => (
+                      <motion.div key={c.num}
+                        className="w-[260px] sm:w-[280px] shrink-0"
+                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.08 + i * 0.06, duration: 0.45 }}
+                      >
+                        <GlowCard glowColor={c.glow} customSize className="w-full p-5 flex flex-col justify-between min-h-[190px]">
+                          <div>
+                            <div className="flex items-center justify-between mb-4">
+                              <span className="text-[10px] tracking-[0.25em] uppercase font-medium" style={{ color: c.accent }}>{c.category}</span>
+                              <span className="text-white/15 text-[11px]">{c.num}</span>
+                            </div>
+                            <p className="text-white text-[14px] font-medium leading-snug mb-2">{c.title}</p>
+                            <p className="text-white/40 text-[12px] leading-relaxed">{c.desc}</p>
+                          </div>
+                          <div className="pt-3 border-t border-white/[0.08] mt-4">
+                            <p className="text-[13px] font-semibold" style={{ color: c.accent }}>{c.result}</p>
+                          </div>
+                        </GlowCard>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </div>
+                <p className="text-white/15 text-[10px] mt-3 tracking-[0.25em] uppercase text-center select-none">
+                  drag to explore
+                </p>
+              </div>
             </motion.div>
           ) : (
             <motion.div
