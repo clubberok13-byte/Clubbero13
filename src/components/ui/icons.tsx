@@ -1,0 +1,40 @@
+export const TELEGRAM = 'https://t.me/AlexSTETSKIY'
+export const MAX_LINK = 'https://max.ru/u/f9LHodD0cOK2v_PtEXNb7pWiymoRrudHZ6CrhiUuyKhSVxnT4byEtDb3yz8'
+
+export function TelegramIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+    </svg>
+  )
+}
+
+export function MaxIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <rect width="24" height="24" rx="5" fill="currentColor" opacity="0.15"/>
+      <text x="12" y="16.5" textAnchor="middle" fontSize="9" fontWeight="800" fill="currentColor" fontFamily="Arial, sans-serif">MAX</text>
+    </svg>
+  )
+}
+
+export function LogoIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 256 256" fill="none">
+      <path fill="url(#lidinc-grad)" d="M 160 88 L 194 34 L 216 0 L 256 0 L 256 40 L 221.5 93.5 L 200 128 L 256 128 L 256 256 L 96 256 L 96 168 L 64.246 220 L 40 256 L 0 256 L 0 216 L 34 162 L 56 128 L 0 128 L 0 0 L 160 0 Z" />
+    </svg>
+  )
+}
+
+export function SvgDefs() {
+  return (
+    <svg width="0" height="0" style={{ position: 'absolute', overflow: 'hidden' }} aria-hidden="true">
+      <defs>
+        <linearGradient id="lidinc-grad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stopColor="#60a5fa" />
+          <stop offset="100%" stopColor="#22d3ee" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
