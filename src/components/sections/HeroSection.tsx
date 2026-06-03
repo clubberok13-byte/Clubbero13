@@ -80,9 +80,13 @@ export default function HeroSection({ onContact, onScrollToServices, onPlayVideo
 
   return (
     <div ref={heroRef} className="relative h-screen overflow-hidden bg-[#f0f0ee]">
-      <video src={VIDEO_SRC} autoPlay muted loop playsInline
+      <video
+        src={VIDEO_SRC} muted loop playsInline
+        autoPlay={typeof window !== 'undefined' && window.innerWidth > 768}
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: 'center 20%', backgroundColor: '#0d0d0d' }} />
+        style={{ objectPosition: 'center 20%', backgroundColor: '#0d0d0d' }}
+        poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect fill='%230d0d0d'/%3E%3C/svg%3E"
+      />
 
       <motion.div className="absolute inset-0"
         initial={{ clipPath: 'inset(22% 12% 22% 12% round 18px)' }}

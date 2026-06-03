@@ -15,6 +15,8 @@ import CasesTestimonialsSection from './components/sections/CasesTestimonialsSec
 import HowWeWorkSection from './components/sections/HowWeWorkSection'
 import CtaSection from './components/sections/CtaSection'
 import ChatWidget from './components/ui/chat-widget'
+import CookieBanner from './components/ui/cookie-banner'
+import FaqSection from './components/sections/FaqSection'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -150,6 +152,7 @@ export default function App() {
       <AboutSection />
       <CasesTestimonialsSection />
       <HowWeWorkSection />
+      <FaqSection />
       <CtaSection onContact={() => setContactSection(SECTIONS[0])}
         onScrollTo={(idx) => lenisRef.current?.scrollTo(idx * window.innerHeight)} />
 
@@ -182,6 +185,7 @@ export default function App() {
       <ScrollProgress />
       <CursorTrail active={inServices} />
       <Preloader done={loaded} />
+      <CookieBanner />
       <ScrollToTop visible={showTopBtn} />
       {inServices && <CustomCursor accent={cursorAccent} />}
 

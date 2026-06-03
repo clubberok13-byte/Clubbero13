@@ -80,7 +80,7 @@ export function VideoModal({ src, onClose }: { src: string; onClose: () => void 
 }
 
 export function SectionProgress({ idx, visible }: { idx: number; visible: boolean }) {
-  const total = 5
+  const total = 6
   const current = Math.max(0, idx - 1)
   return (
     <AnimatePresence>
