@@ -1,26 +1,36 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
-const SYSTEM_PROMPT = `Ты AI-ассистент компании LIDINC — агентства AI-решений для бизнеса. Отвечай на русском, кратко и по делу.
+const SYSTEM_PROMPT = `Ты AI-ассистент компании LIDINC — агентства AI-решений для бизнеса. Отвечай на русском, кратко и по делу. Максимум 3-4 предложения на ответ.
 
 Услуги LIDINC:
-• AI Content (от 15 000 ₽) — видеопроизводство, AI-аватары, генерация текстов, контент-завод
-• AI Development (от 30 000 ₽) — разработка сайтов, 3D-моделирование, парсинг данных, фотообработка
-• AI Business (от 50 000 ₽) — чат-боты, автоматизация CRM, голосовые помощники, AI-аналитика
-• AI Education (от 20 000 ₽) — корпоративное обучение, воркшопы, онлайн-курсы по AI
+• AI Контент (от 15 000 ₽) — видеопроизводство, AI-аватары, генерация текстов, контент-завод
+• AI Автоматизация (от 30 000 ₽) — разработка сайтов, 3D-моделирование, парсинг данных, фотообработка
+• AI для Бизнеса (от 50 000 ₽) — чат-боты, автоматизация CRM, голосовые помощники, AI-аналитика
+• AI Обучение (от 20 000 ₽) — корпоративное обучение, воркшопы, онлайн-курсы по AI
 
-Если клиент хочет заказать или узнать подробнее — предложи оставить имя и контакт. Не придумывай несуществующих услуг. Будь дружелюбным и профессиональным.`
+Контакт: t.me/AlexSTETSKIY
 
+Если клиент хочет заказать или узнать подробнее — предложи оставить имя и контакт через форму на сайте или написать в Telegram. Не придумывай несуществующих услуг. Будь дружелюбным и профессиональным.`
+
+const ALLOWED_ORIGINS = ['https://lidinc.ru', 'https://www.lidinc.ru', 'https://clubbero13.vercel.app']
 const MAX_MESSAGES = 20
 const MAX_CONTENT_LENGTH = 2000
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const origin = req.headers.origin ?? ''
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+  if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).end()
 
   const { messages } = req.body as {
     messages: Array<{ role: string; content: string }>
   }
 
-  // Input validation
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: 'Invalid messages' })
   }
@@ -35,36 +45,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'No valid messages' })
   }
 
-  const apiKey = process.env.OPENAI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return res.status(500).json({ error: 'Service unavailable' })
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 400,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          ...sanitized,
-        ],
+        system: SYSTEM_PROMPT,
+        messages: sanitized,
       }),
     })
 
     if (!response.ok) {
-      console.error('OpenAI error:', response.status)
+      console.error('Anthropic error:', response.status, await response.text())
       return res.status(502).json({ error: 'AI service error' })
     }
 
     const data = await response.json() as {
-      choices: Array<{ message: { content: string } }>
+      content: Array<{ type: string; text: string }>
     }
 
-    const reply = data.choices?.[0]?.message?.content
+    const reply = data.content?.[0]?.text
     if (!reply) return res.status(502).json({ error: 'Empty response from AI' })
 
     res.json({ reply })
