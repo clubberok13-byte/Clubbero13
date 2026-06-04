@@ -141,7 +141,7 @@ export default function HeroSection({ onContact, onScrollToServices, onPlayVideo
             <MagneticButton>
               <button type="button" onClick={onContact}
                 className="inline-flex items-center gap-2 text-[13px] font-medium text-white/50 border border-white/20 rounded-full px-5 py-2.5 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-200 group backdrop-blur-sm">
-                Заказать консультацию
+                Бесплатная консультация
                 <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-60 group-hover:opacity-100">→</span>
               </button>
             </MagneticButton>
