@@ -1,22 +1,23 @@
 import './index.css'
 import Lenis from 'lenis'
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
 import { SECTIONS, HERO, VIDEO_SRC, type SectionData } from './data/sections'
-import { TelegramIcon, MaxIcon, LogoIcon, SvgDefs, TELEGRAM, MAX_LINK } from './components/ui/icons'
+import { TelegramIcon, MaxIcon, WhatsAppIcon, LogoIcon, SvgDefs, TELEGRAM, MAX_LINK, WHATSAPP } from './components/ui/icons'
 import { GrainOverlay, Preloader, VideoModal, SectionProgress, ScrollProgress, ScrollToTop, CustomCursor, CursorTrail } from './components/ui/overlays'
 import { ContactForm, DetailModal } from './components/ui/modals'
 import HeroSection from './components/sections/HeroSection'
-import ServicesSection from './components/sections/ServicesSection'
-import AboutSection from './components/sections/AboutSection'
-import CasesTestimonialsSection from './components/sections/CasesTestimonialsSection'
-import HowWeWorkSection from './components/sections/HowWeWorkSection'
-import CtaSection from './components/sections/CtaSection'
-import ChatWidget from './components/ui/chat-widget'
-import CookieBanner from './components/ui/cookie-banner'
-import FaqSection from './components/sections/FaqSection'
+
+const ServicesSection        = lazy(() => import('./components/sections/ServicesSection'))
+const AboutSection           = lazy(() => import('./components/sections/AboutSection'))
+const CasesTestimonialsSection = lazy(() => import('./components/sections/CasesTestimonialsSection'))
+const HowWeWorkSection       = lazy(() => import('./components/sections/HowWeWorkSection'))
+const FaqSection             = lazy(() => import('./components/sections/FaqSection'))
+const CtaSection             = lazy(() => import('./components/sections/CtaSection'))
+const ChatWidget             = lazy(() => import('./components/ui/chat-widget'))
+const CookieBanner           = lazy(() => import('./components/ui/cookie-banner'))
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -147,17 +148,33 @@ export default function App() {
 
       {/* Sections */}
       <HeroSection onContact={() => setContactSection(SECTIONS[0])} onScrollToServices={scrollToServices} onPlayVideo={() => setShowVideo(true)} />
-      <ServicesSection activeTabIdx={serviceTab} onTabChange={setServiceTab}
-        onDetail={(s) => setDetailSection(s)} onContact={(s) => setContactSection(s)} />
-      <AboutSection />
-      <CasesTestimonialsSection />
-      <HowWeWorkSection />
-      <FaqSection />
-      <CtaSection onContact={() => setContactSection(SECTIONS[0])}
-        onScrollTo={(idx) => lenisRef.current?.scrollTo(idx * window.innerHeight)} />
+      <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#080808' }} />}>
+        <ServicesSection activeTabIdx={serviceTab} onTabChange={setServiceTab}
+          onDetail={(s) => setDetailSection(s)} onContact={(s) => setContactSection(s)} />
+      </Suspense>
+      <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#0a0a0a' }} />}>
+        <AboutSection />
+      </Suspense>
+      <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#080808' }} />}>
+        <CasesTestimonialsSection />
+      </Suspense>
+      <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#060606' }} />}>
+        <HowWeWorkSection />
+      </Suspense>
+      <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#060606' }} />}>
+        <FaqSection />
+      </Suspense>
+      <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#050505' }} />}>
+        <CtaSection onContact={() => setContactSection(SECTIONS[0])}
+          onScrollTo={(idx) => lenisRef.current?.scrollTo(idx * window.innerHeight)} />
+      </Suspense>
 
       {/* FABs */}
       <div className="fixed right-5 bottom-8 z-40 flex flex-col gap-2 items-end">
+        <a href={WHATSAPP} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 text-[12px] font-medium text-white/50 border border-white/15 rounded-full px-4 py-2 hover:text-white hover:border-white/35 hover:bg-white/5 transition-all duration-200 backdrop-blur-sm">
+          <WhatsAppIcon size={13} />WhatsApp
+        </a>
         <a href={TELEGRAM} target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-2 text-[12px] font-medium text-white/50 border border-white/15 rounded-full px-4 py-2 hover:text-white hover:border-white/35 hover:bg-white/5 transition-all duration-200 backdrop-blur-sm">
           <TelegramIcon size={13} />Telegram
@@ -180,12 +197,12 @@ export default function App() {
       </AnimatePresence>
 
       {/* Effects & widgets */}
-      <ChatWidget />
+      <Suspense fallback={null}><ChatWidget /></Suspense>
       <SectionProgress idx={sectionIdx} visible={inServices} />
       <ScrollProgress />
       <CursorTrail active={inServices} />
       <Preloader done={loaded} />
-      <CookieBanner />
+      <Suspense fallback={null}><CookieBanner /></Suspense>
       <ScrollToTop visible={showTopBtn} />
       {inServices && <CustomCursor accent={cursorAccent} />}
 

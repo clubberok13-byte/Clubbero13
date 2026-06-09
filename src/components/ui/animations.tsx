@@ -119,3 +119,34 @@ export function useScrambleOnView(text: string) {
   const scrambled = useTextScramble(text, active)
   return { ref, scrambled }
 }
+
+// ── Blur + slide reveal for section content blocks ────────────────────────────
+export function SectionReveal({ children, className, delay = 0 }: {
+  children: React.ReactNode; className?: string; delay?: number
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 32, filter: 'blur(8px)' }}
+      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const, delay }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+// ── Stagger variants for lists ────────────────────────────────────────────────
+export const staggerContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.08 } },
+}
+
+export const staggerItem = {
+  hidden: { opacity: 0, y: 18, filter: 'blur(4px)' },
+  show: {
+    opacity: 1, y: 0, filter: 'blur(0px)',
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as const },
+  },
+}

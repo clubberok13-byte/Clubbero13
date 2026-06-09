@@ -1,7 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
 @import "tailwindcss";
 
 * { font-family: 'DM Sans', system-ui, sans-serif; }
+
+/* iOS Safari viewport height fix — svh with vh fallback */
+.svh-screen {
+  height: 100vh;
+  height: 100svh;
+}
+.svh-screen-min {
+  min-height: 100vh;
+  min-height: 100svh;
+}
 
 @keyframes shimmer-sweep {
   0%   { transform: translateX(-100%) skewX(-15deg); }

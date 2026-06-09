@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { checkRateLimit, getClientIp } from './_rateLimit.js'
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -16,6 +17,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+
+  const ip = getClientIp(req)
+  if (!checkRateLimit(ip, 3, 10 * 60_000)) {
+    return res.status(429).json({ error: 'Too many requests. Please try again later.' })
+  }
 
   const { name, contact, service, message } = req.body as {
     name: string; contact: string; service: string; message: string
@@ -50,8 +56,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ── Email via Resend ──
   const resendKey = process.env.RESEND_API_KEY
-  const toEmail = process.env.CONTACT_EMAIL ?? 'clubberok13@gmail.com'
-  if (resendKey) {
+  const toEmail = process.env.CONTACT_EMAIL
+  if (resendKey && toEmail) {
     try {
       const emailRes = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -69,8 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  // If every configured channel failed — return error
-  const configured = [botToken && chatId, resendKey].filter(Boolean).length
+  const configured = [botToken && chatId, resendKey && toEmail].filter(Boolean).length
   if (configured > 0 && errors.length >= configured) {
     console.error('All notification channels failed:', errors)
     return res.status(500).json({ error: 'Notification delivery failed' })

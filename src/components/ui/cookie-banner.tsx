@@ -16,6 +16,11 @@ export default function CookieBanner() {
     setVisible(false)
   }
 
+  const decline = () => {
+    localStorage.setItem('cookie_consent', 'declined')
+    setVisible(false)
+  }
+
   return (
     <AnimatePresence>
       {visible && (
@@ -32,10 +37,16 @@ export default function CookieBanner() {
                 Политика конфиденциальности
               </a>
             </p>
-            <button type="button" onClick={accept}
-              className="shrink-0 px-5 py-2 rounded-full bg-white text-[#111] text-[12px] font-semibold hover:bg-white/90 transition-colors">
-              Принять
-            </button>
+            <div className="flex gap-2 shrink-0">
+              <button type="button" onClick={decline}
+                className="px-4 py-2 rounded-full border border-white/15 text-white/40 text-[12px] font-medium hover:text-white/60 hover:border-white/30 transition-colors">
+                Отклонить
+              </button>
+              <button type="button" onClick={accept}
+                className="px-5 py-2 rounded-full bg-white text-[#111] text-[12px] font-semibold hover:bg-white/90 transition-colors">
+                Принять
+              </button>
+            </div>
           </div>
         </motion.div>
       )}

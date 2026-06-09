@@ -1,6 +1,6 @@
 import { motion, useInView, animate } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
-import { FloatingOrbs, SplitTitle, useScrambleOnView } from '../ui/animations'
+import { FloatingOrbs, SplitTitle, useScrambleOnView, SectionReveal } from '../ui/animations'
 
 interface Stat { value: number; suffix: string; label: string; bar: number }
 
@@ -55,8 +55,8 @@ export default function AboutSection() {
   return (
     <div
       ref={ref}
-      className="relative overflow-hidden flex flex-col justify-center"
-      style={{ width: '100vw', height: '100vh', backgroundColor: '#0a0a0a' }}
+      className="svh-screen relative overflow-hidden flex flex-col justify-center"
+      style={{ width: '100vw', backgroundColor: '#0a0a0a' }}
     >
       <FloatingOrbs accent="#3b82f6" />
       <div className="absolute inset-0 bg-gradient-to-br from-blue-950/20 via-transparent to-purple-950/15 pointer-events-none" />
@@ -76,15 +76,13 @@ export default function AboutSection() {
           style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
         />
 
-        <motion.p
-          className="text-white/50 text-[14px] sm:text-[15px] leading-relaxed max-w-lg mb-10"
-          initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          transition={{ delay: 0.35 }}
-        >
-          LIDINC — AI-агентство полного цикла. Мы создаём контент, разрабатываем
-          инструменты, автоматизируем процессы и обучаем команды работать с
-          искусственным интеллектом.
-        </motion.p>
+        <SectionReveal delay={0.25}>
+          <p className="text-white/50 text-[14px] sm:text-[15px] leading-relaxed max-w-lg mb-10">
+            LIDINC — AI-агентство полного цикла. Мы создаём контент, разрабатываем
+            инструменты, автоматизируем процессы и обучаем команды работать с
+            искусственным интеллектом.
+          </p>
+        </SectionReveal>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-12">
           {STATS.map((stat, i) => (

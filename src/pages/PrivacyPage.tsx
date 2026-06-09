@@ -1,6 +1,6 @@
 import { ArrowLeft } from 'lucide-react'
+import { TELEGRAM } from '../components/ui/icons'
 
-const TELEGRAM = 'https://t.me/AlexSTETSKIY'
 const EMAIL = 'clubberok13@gmail.com'
 
 function navigate(to: string) {

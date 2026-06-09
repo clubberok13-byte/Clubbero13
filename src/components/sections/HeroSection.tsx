@@ -30,10 +30,10 @@ function SplitChars({ text, baseDelay }: { text: string; baseDelay: number }) {
     <>
       {text.split('').map((char, i) => (
         <span key={i} style={{ display: 'inline-block', overflow: 'hidden' }}>
-          <motion.span style={{ display: 'inline-block' }}
+          <motion.span style={{ display: 'inline-block', whiteSpace: 'pre' }}
             initial={{ y: '110%', opacity: 0 }} animate={{ y: '0%', opacity: 1 }}
             transition={{ delay: baseDelay + i * 0.032, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}>
-            {char === ' ' ? ' ' : char}
+            {char}
           </motion.span>
         </span>
       ))}
@@ -71,6 +71,7 @@ export default function HeroSection({ onContact, onScrollToServices, onPlayVideo
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '-18%'])
   const [scrolled, setScrolled] = useState(false)
+  const [videoReady, setVideoReady] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -79,13 +80,27 @@ export default function HeroSection({ onContact, onScrollToServices, onPlayVideo
   }, [])
 
   return (
-    <div ref={heroRef} className="relative h-screen overflow-hidden bg-[#f0f0ee]">
+    <div ref={heroRef} className="svh-screen relative overflow-hidden bg-[#0d0d0d]">
+      {/* Placeholder shown while video loads */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 70% 55% at 18% 28%, rgba(59,130,246,0.13) 0%, transparent 55%), linear-gradient(160deg, #080810 0%, #0d0d0d 50%, #08080a 100%)',
+          transition: 'opacity 0.8s ease',
+          opacity: videoReady ? 0 : 1,
+        }}
+      />
+
       <video
         src={VIDEO_SRC} muted loop playsInline
         autoPlay={typeof window !== 'undefined' && window.innerWidth > 768}
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: 'center 20%', backgroundColor: '#0d0d0d' }}
-        poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect fill='%230d0d0d'/%3E%3C/svg%3E"
+        style={{
+          objectPosition: 'center 20%',
+          transition: 'opacity 0.8s ease',
+          opacity: videoReady ? 1 : 0,
+        }}
+        onCanPlay={() => setVideoReady(true)}
       />
 
       <motion.div className="absolute inset-0"

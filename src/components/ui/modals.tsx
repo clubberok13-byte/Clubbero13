@@ -4,14 +4,26 @@ import { X, Send, Check } from 'lucide-react'
 import { TelegramIcon, MaxIcon, TELEGRAM, MAX_LINK } from './icons'
 import { SECTIONS, type SectionData } from '../../data/sections'
 
+function isValidContact(value: string): boolean {
+  const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+  const phone = /^[\+]?[\d\s\-\(\)]{7,20}$/
+  return email.test(value.trim()) || phone.test(value.trim())
+}
+
 export function ContactForm({ defaultService, onClose }: { defaultService?: string; onClose: () => void }) {
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [contactError, setContactError] = useState('')
   const [form, setForm] = useState({ name: '', contact: '', message: '', service: defaultService ?? SECTIONS[0].category })
 
   const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (!isValidContact(form.contact)) {
+      setContactError('Введите корректный email или номер телефона')
+      return
+    }
+    setContactError('')
     setLoading(true); setError('')
     try {
       const res = await fetch('/api/contact', {
@@ -55,8 +67,15 @@ export function ContactForm({ defaultService, onClose }: { defaultService?: stri
             </div>
             <div>
               <label className="block text-[11px] text-gray-400 mb-1.5 tracking-wide uppercase">Телефон или Email</label>
-              <input required value={form.contact} onChange={e => setForm(p => ({ ...p, contact: e.target.value }))} placeholder="+7 999 000-00-00"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:border-blue-400 transition-colors" />
+              <input
+                required
+                value={form.contact}
+                onChange={e => { setForm(p => ({ ...p, contact: e.target.value })); if (contactError) setContactError('') }}
+                onBlur={() => { if (form.contact && !isValidContact(form.contact)) setContactError('Введите корректный email или номер телефона') }}
+                placeholder="+7 999 000-00-00"
+                className={`w-full bg-gray-50 border rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-300 focus:outline-none transition-colors ${contactError ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-blue-400'}`}
+              />
+              {contactError && <p className="text-red-500 text-[11px] mt-1">{contactError}</p>}
             </div>
             <div>
               <label className="block text-[11px] text-gray-400 mb-1.5 tracking-wide uppercase">Услуга</label>

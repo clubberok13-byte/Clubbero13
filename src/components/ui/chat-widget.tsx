@@ -14,16 +14,33 @@ export default function ChatWidget() {
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [nudge, setNudge] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const userInteracted = useRef(false)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 300)
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 300)
+      setNudge(false)
+      userInteracted.current = true
+    }
   }, [open])
+
+  useEffect(() => {
+    if (sessionStorage.getItem('chat_nudge_shown')) return
+    const t = setTimeout(() => {
+      if (!userInteracted.current) {
+        setNudge(true)
+        sessionStorage.setItem('chat_nudge_shown', '1')
+      }
+    }, 20_000)
+    return () => clearTimeout(t)
+  }, [])
 
   const send = async () => {
     const text = input.trim()
@@ -32,18 +49,32 @@ export default function ChatWidget() {
     const next: Message[] = [...messages, { role: 'user', content: text }]
     setMessages(next)
     setLoading(true)
+
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 15_000)
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: next }),
+        signal: controller.signal,
       })
+      clearTimeout(timeout)
+      if (res.status === 429) {
+        setMessages(m => [...m, { role: 'assistant', content: 'Слишком много запросов. Подожди минуту и попробуй снова.' }])
+        return
+      }
       if (!res.ok) throw new Error(`status ${res.status}`)
       const data = await res.json() as { reply: string }
       if (!data.reply) throw new Error('empty reply')
       setMessages(m => [...m, { role: 'assistant', content: data.reply }])
-    } catch {
-      setMessages(m => [...m, { role: 'assistant', content: 'Ошибка соединения. Попробуй ещё раз.' }])
+    } catch (err) {
+      clearTimeout(timeout)
+      const msg = err instanceof Error && err.name === 'AbortError'
+        ? 'Запрос занял слишком много времени. Попробуй ещё раз.'
+        : 'Ошибка соединения. Попробуй ещё раз.'
+      setMessages(m => [...m, { role: 'assistant', content: msg }])
     } finally {
       setLoading(false)
     }
@@ -127,6 +158,24 @@ export default function ChatWidget() {
         )}
       </AnimatePresence>
 
+      {/* Nudge tooltip */}
+      <AnimatePresence>
+        {nudge && !open && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.92 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed bottom-[calc(3rem+3.5rem+0.75rem)] right-5 z-50 max-w-[220px]"
+          >
+            <div className="bg-[#0f0f0f] border border-white/12 rounded-xl px-4 py-2.5 shadow-xl text-white/75 text-[12px] leading-snug">
+              Нужна помощь с выбором услуги?
+              <span className="text-blue-400"> Спроси меня →</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Bubble button */}
       <motion.button
         onClick={() => setOpen(o => !o)}
@@ -134,6 +183,12 @@ export default function ChatWidget() {
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
       >
+        {nudge && !open && (
+          <span className="absolute -top-1 -right-1 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+          </span>
+        )}
         <AnimatePresence mode="wait">
           {open ? (
             <motion.div key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FloatingOrbs, SplitTitle } from '../ui/animations'
+import { FloatingOrbs, SplitTitle, useScrambleOnView, staggerContainer, staggerItem } from '../ui/animations'
 
 const FAQS = [
   {
@@ -60,28 +60,37 @@ function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean
 
 export default function FaqSection() {
   const [open, setOpen] = useState<number | null>(null)
+  const { ref, scrambled } = useScrambleOnView('FAQ')
 
   return (
-    <div className="relative overflow-hidden flex flex-col justify-center"
-      style={{ width: '100vw', minHeight: '100vh', backgroundColor: '#080808' }}>
+    <div ref={ref} className="svh-screen-min relative overflow-hidden flex flex-col justify-center"
+      style={{ width: '100vw', backgroundColor: '#080808' }}>
       <FloatingOrbs accent="#60a5fa" />
       <div className="absolute inset-0 bg-gradient-to-br from-blue-950/15 via-transparent to-transparent pointer-events-none" />
 
       <div className="relative z-10 px-6 sm:px-12 md:px-20 lg:px-28 w-full py-24">
         <motion.p className="text-[11px] tracking-[0.3em] uppercase text-blue-400 mb-3 font-medium"
           initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-          FAQ
+          {scrambled}
         </motion.p>
         <SplitTitle text={'Частые\nвопросы'}
           className="text-[2rem] sm:text-[2.8rem] md:text-[3.2rem] text-white tracking-tight mb-12"
           style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }} />
 
-        <div className="max-w-3xl">
+        <motion.div
+          className="max-w-3xl"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-60px' }}
+        >
           {FAQS.map((faq, i) => (
-            <FaqItem key={i} q={faq.q} a={faq.a}
-              open={open === i} onToggle={() => setOpen(open === i ? null : i)} />
+            <motion.div key={i} variants={staggerItem}>
+              <FaqItem q={faq.q} a={faq.a}
+                open={open === i} onToggle={() => setOpen(open === i ? null : i)} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   )

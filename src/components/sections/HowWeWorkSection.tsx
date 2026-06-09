@@ -39,42 +39,54 @@ function StepCard({ step, index }: { step: typeof STEPS[0]; index: number }) {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: index * 0.12, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-      className="relative flex flex-col"
+      initial={{ opacity: 0, y: 32, filter: 'blur(6px)' }}
+      animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+      transition={{ delay: index * 0.14, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="relative flex flex-col group"
     >
-      {/* Connector line to next (desktop) */}
+      {/* Connector line to next step (desktop only) */}
       {index < STEPS.length - 1 && (
-        <div className="hidden lg:block absolute top-6 left-[calc(50%+24px)] right-[-50%] h-px overflow-hidden">
+        <div className="hidden lg:block absolute top-6 left-[calc(50%+28px)] right-[-calc(50%-28px)] h-px overflow-hidden"
+          style={{ width: 'calc(100% - 56px)' }}>
           <motion.div
             className="h-full origin-left"
-            style={{ background: 'linear-gradient(to right, rgba(34,211,238,0.35), rgba(34,211,238,0.05))' }}
+            style={{ background: 'linear-gradient(to right, rgba(34,211,238,0.4), rgba(34,211,238,0.04))' }}
             initial={{ scaleX: 0 }}
             animate={inView ? { scaleX: 1 } : {}}
-            transition={{ delay: index * 0.12 + 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ delay: index * 0.14 + 0.45, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           />
         </div>
       )}
 
-      {/* Circle */}
+      {/* Icon circle */}
       <motion.div
         className="w-12 h-12 rounded-full flex items-center justify-center mb-5 self-start relative"
-        style={{ border: '1px solid rgba(34,211,238,0.25)', background: 'rgba(34,211,238,0.06)' }}
-        animate={inView ? { boxShadow: '0 0 18px rgba(34,211,238,0.18)' } : { boxShadow: 'none' }}
-        transition={{ delay: index * 0.12 + 0.2, duration: 0.5 }}
+        style={{ border: '1px solid rgba(34,211,238,0.22)', background: 'rgba(34,211,238,0.05)' }}
+        animate={inView ? {
+          boxShadow: '0 0 22px rgba(34,211,238,0.2)',
+          borderColor: 'rgba(34,211,238,0.35)',
+        } : {
+          boxShadow: 'none',
+          borderColor: 'rgba(34,211,238,0.22)',
+        }}
+        whileHover={{ boxShadow: '0 0 32px rgba(34,211,238,0.35)', scale: 1.06 }}
+        transition={{ duration: 0.5, delay: index * 0.14 + 0.2 }}
       >
         <Icon size={16} className="text-cyan-400" />
         <span
           className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-semibold text-cyan-400"
-          style={{ background: '#060606', border: '1px solid rgba(34,211,238,0.25)' }}
+          style={{ background: '#060606', border: '1px solid rgba(34,211,238,0.28)' }}
         >
           {index + 1}
         </span>
       </motion.div>
 
-      <p className="text-white text-[15px] font-medium mb-2">{step.title}</p>
-      <p className="text-white/45 text-[13px] leading-relaxed">{step.desc}</p>
+      <p className="text-white text-[15px] font-medium mb-2 group-hover:text-white transition-colors duration-200">
+        {step.title}
+      </p>
+      <p className="text-white/45 text-[13px] leading-relaxed group-hover:text-white/60 transition-colors duration-200">
+        {step.desc}
+      </p>
     </motion.div>
   )
 }
@@ -85,8 +97,8 @@ export default function HowWeWorkSection() {
   return (
     <div
       ref={ref}
-      className="relative overflow-hidden flex flex-col justify-center"
-      style={{ width: '100vw', height: '100vh', backgroundColor: '#060606' }}
+      className="svh-screen relative overflow-hidden flex flex-col justify-center"
+      style={{ width: '100vw', backgroundColor: '#060606' }}
     >
       <FloatingOrbs accent="#22d3ee" />
       <div className="absolute inset-0 bg-gradient-to-bl from-cyan-950/20 via-transparent to-transparent pointer-events-none" />
