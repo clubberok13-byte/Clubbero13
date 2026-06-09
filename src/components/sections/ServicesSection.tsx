@@ -5,10 +5,21 @@ import { MagneticButton } from '../ui/overlays'
 import { ContentBg, DevelopmentBg, BusinessBg, EducationBg } from '../ui/background-paper-shaders'
 import { SECTIONS, type SectionData } from '../../data/sections'
 
-export default function ServicesSection({ activeTabIdx, onTabChange, onDetail, onContact }: {
+const SERVICE_ROUTES: Record<string, string> = {
+  content: '/ai-content',
+  development: '/ai-automation',
+  business: '/ai-business',
+  education: '/ai-education',
+}
+
+function navigate(to: string) {
+  window.history.pushState({}, '', to)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+}
+
+export default function ServicesSection({ activeTabIdx, onTabChange, onContact }: {
   activeTabIdx: number
   onTabChange: (idx: number) => void
-  onDetail: (s: SectionData) => void
   onContact: (s: SectionData) => void
 }) {
   const section = SECTIONS[activeTabIdx]
@@ -105,7 +116,7 @@ export default function ServicesSection({ activeTabIdx, onTabChange, onDetail, o
               transition={{ duration: 0.5, delay: 0.45 }}
             >
               <MagneticButton>
-                <button type="button" onClick={() => onDetail(section)}
+                <button type="button" onClick={() => navigate(SERVICE_ROUTES[section.id])}
                   className="inline-flex items-center gap-2 text-[13px] font-medium text-white/50 border border-white/20 rounded-full px-5 py-2.5 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-200 group backdrop-blur-sm">
                   Подробнее
                   <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 opacity-60 group-hover:opacity-100">→</span>

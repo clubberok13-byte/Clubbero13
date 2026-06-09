@@ -7,7 +7,7 @@ import { Menu, X } from 'lucide-react'
 import { SECTIONS, HERO, VIDEO_SRC, type SectionData } from './data/sections'
 import { TelegramIcon, MaxIcon, WhatsAppIcon, LogoIcon, SvgDefs, TELEGRAM, MAX_LINK, WHATSAPP } from './components/ui/icons'
 import { GrainOverlay, Preloader, VideoModal, SectionProgress, ScrollProgress, ScrollToTop, CustomCursor, CursorTrail } from './components/ui/overlays'
-import { ContactForm, DetailModal } from './components/ui/modals'
+import { ContactForm } from './components/ui/modals'
 import HeroSection from './components/sections/HeroSection'
 
 const ServicesSection        = lazy(() => import('./components/sections/ServicesSection'))
@@ -25,7 +25,6 @@ export default function App() {
   const [serviceTab, setServiceTab] = useState(0)
   const [inServices, setInServices] = useState(false)
   const [sectionIdx, setSectionIdx] = useState(0)
-  const [detailSection, setDetailSection] = useState<SectionData | null>(null)
   const [contactSection, setContactSection] = useState<SectionData | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [showVideo, setShowVideo] = useState(false)
@@ -150,7 +149,7 @@ export default function App() {
       <HeroSection onContact={() => setContactSection(SECTIONS[0])} onScrollToServices={scrollToServices} onPlayVideo={() => setShowVideo(true)} />
       <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#080808' }} />}>
         <ServicesSection activeTabIdx={serviceTab} onTabChange={setServiceTab}
-          onDetail={(s) => setDetailSection(s)} onContact={(s) => setContactSection(s)} />
+          onContact={(s) => setContactSection(s)} />
       </Suspense>
       <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#0a0a0a' }} />}>
         <AboutSection />
@@ -186,12 +185,6 @@ export default function App() {
       </div>
 
       {/* Modals */}
-      <AnimatePresence>
-        {detailSection && (
-          <DetailModal section={detailSection} onClose={() => setDetailSection(null)}
-            onContact={() => { const s = detailSection; setDetailSection(null); setContactSection(s) }} />
-        )}
-      </AnimatePresence>
       <AnimatePresence>
         {contactSection && <ContactForm defaultService={contactSection.category} onClose={() => setContactSection(null)} />}
       </AnimatePresence>
