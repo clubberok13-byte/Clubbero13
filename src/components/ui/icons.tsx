@@ -1,7 +1,6 @@
 export const TELEGRAM = 'https://t.me/AlexSTETSKIY'
 export const MAX_LINK = 'https://max.ru/u/f9LHodD0cOK2v_PtEXNb7pWiymoRrudHZ6CrhiUuyKhSVxnT4byEtDb3yz8'
-// TODO: Replace with actual WhatsApp number (e.g. 79001234567)
-export const WHATSAPP = 'https://wa.me/79001234567'
+export const WHATSAPP = 'https://wa.me/79998862464'
 
 export function TelegramIcon({ size = 16 }: { size?: number }) {
   return (
