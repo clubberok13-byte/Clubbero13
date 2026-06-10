@@ -26,6 +26,14 @@ const TEAM = [
     accent: '#a78bfa',
     tg: null,
   },
+  {
+    name: 'AI Лидогенерация',
+    role: 'Трафик и лиды',
+    bio: 'Настраиваем AI-воронки, автоматический прогрев и квалификацию лидов через чат-боты и автоматизации.',
+    initials: '📈',
+    accent: '#34d399',
+    tg: null,
+  },
 ]
 
 export default function TeamSection() {
@@ -46,7 +54,7 @@ export default function TeamSection() {
           Кто за этим стоит
         </motion.h2>
 
-        <motion.div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl"
+        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl"
           variants={staggerContainer} initial="hidden" whileInView="show" viewport={{ once: true }}>
           {TEAM.map(member => (
             <motion.div key={member.name} variants={staggerItem}
