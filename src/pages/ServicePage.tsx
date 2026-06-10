@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, type FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, ChevronDown, Send } from 'lucide-react'
 import { FloatingOrbs, staggerContainer, staggerItem } from '../components/ui/animations'
 import { LogoIcon, SvgDefs, TELEGRAM, WHATSAPP } from '../components/ui/icons'
 import { GlowCard } from '../components/ui/spotlight-card'
+import { ymGoal } from '../lib/metrika'
 import type { SectionData } from '../data/sections'
 
 function navigate(to: string) {
@@ -40,6 +41,81 @@ function FaqItem({ q, a }: { q: string; a: string }) {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  )
+}
+
+function InlineContactForm({ accent, service }: { accent: string; service: string }) {
+  const [name, setName] = useState('')
+  const [contact, setContact] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState('')
+  const nameRef = useRef<HTMLInputElement>(null)
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    if (!name.trim() || !contact.trim()) return
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), contact: contact.trim(), service, message: '' }),
+      })
+      if (!res.ok) throw new Error('error')
+      setSent(true)
+      ymGoal('lead_sent')
+    } catch {
+      setError('Ошибка. Попробуйте ещё раз или напишите нам в Telegram.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-8 max-w-xl">
+      {sent ? (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center py-4">
+          <p className="text-white text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
+            Заявка отправлена
+          </p>
+          <p className="text-white/40 text-[13px]">Свяжемся в течение нескольких часов.</p>
+        </motion.div>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <p className="text-white text-[15px] font-medium mb-1">Оставить заявку</p>
+          <p className="text-white/35 text-[12px] leading-relaxed mb-2">
+            Ответим в течение 48 часов. Консультация бесплатна.
+          </p>
+          <input
+            ref={nameRef}
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Ваше имя"
+            required
+            className="w-full rounded-xl px-4 py-3 text-[13px] text-white placeholder-white/25 bg-white/[0.04] border border-white/[0.08] focus:outline-none focus:border-white/25 transition-colors"
+          />
+          <input
+            value={contact}
+            onChange={e => setContact(e.target.value)}
+            placeholder="Telegram, WhatsApp или email"
+            required
+            className="w-full rounded-xl px-4 py-3 text-[13px] text-white placeholder-white/25 bg-white/[0.04] border border-white/[0.08] focus:outline-none focus:border-white/25 transition-colors"
+          />
+          {error && <p className="text-red-400 text-[12px]">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading || !name.trim() || !contact.trim()}
+            className="mt-1 inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-white text-[13px] font-semibold disabled:opacity-40 transition-opacity"
+            style={{ background: `linear-gradient(135deg, ${accent}cc, ${accent}88)` }}
+          >
+            <Send size={13} />
+            {loading ? 'Отправляем…' : 'Отправить заявку'}
+          </button>
+        </form>
+      )}
     </div>
   )
 }
@@ -185,6 +261,11 @@ export default function ServicePage({ section, h1, subtitle, metaTitle, metaDesc
             </a>
           </div>
         </div>
+      </section>
+
+      {/* Inline contact form */}
+      <section className="px-6 sm:px-12 md:px-20 lg:px-28 pb-16">
+        <InlineContactForm accent={section.accent} service={section.category} />
       </section>
 
       {/* FAQ */}

@@ -7,11 +7,13 @@ import { Menu, X } from 'lucide-react'
 import { SECTIONS, HERO, type SectionData } from './data/sections'
 import { TelegramIcon, MaxIcon, WhatsAppIcon, LogoIcon, SvgDefs, TELEGRAM, MAX_LINK, WHATSAPP } from './components/ui/icons'
 import { GrainOverlay, Preloader, SectionProgress, ScrollProgress, ScrollToTop, CustomCursor, CursorTrail } from './components/ui/overlays'
+import { ymGoal } from './lib/metrika'
 import { ContactForm } from './components/ui/modals'
 import HeroSection from './components/sections/HeroSection'
 
 const ServicesSection        = lazy(() => import('./components/sections/ServicesSection'))
 const AboutSection           = lazy(() => import('./components/sections/AboutSection'))
+const TeamSection              = lazy(() => import('./components/sections/TeamSection'))
 const CasesTestimonialsSection = lazy(() => import('./components/sections/CasesTestimonialsSection'))
 const HowWeWorkSection       = lazy(() => import('./components/sections/HowWeWorkSection'))
 const FaqSection             = lazy(() => import('./components/sections/FaqSection'))
@@ -117,9 +119,12 @@ export default function App() {
       {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div className="fixed inset-0 z-[55] bg-[#f0f0ee]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-6 px-8"
+          <motion.div className="fixed inset-0 z-[55] backdrop-blur-xl flex flex-col items-center justify-center gap-6 px-8"
+            style={{ backgroundColor: inServices ? 'rgba(8,8,8,0.96)' : 'rgba(240,240,238,0.96)' }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <button type="button" className="absolute top-5 right-5 text-gray-400 hover:text-gray-900" onClick={() => setMenuOpen(false)}>
+            <button type="button"
+              className={`absolute top-5 right-5 transition-colors ${inServices ? 'text-white/40 hover:text-white' : 'text-gray-400 hover:text-gray-900'}`}
+              onClick={() => setMenuOpen(false)}>
               <X size={22} />
             </button>
             {[
@@ -131,7 +136,7 @@ export default function App() {
             ].map((item, i) => (
               <motion.button key={item.label} type="button" onClick={() => scrollToSection(item.idx)}
                 initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
-                className="text-[1.3rem] font-semibold text-gray-400 hover:text-gray-900 transition-colors">
+                className={`text-[1.3rem] font-semibold transition-colors ${inServices ? 'text-white/40 hover:text-white' : 'text-gray-400 hover:text-gray-900'}`}>
                 {item.label}
               </motion.button>
             ))}
@@ -153,6 +158,9 @@ export default function App() {
       <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#0a0a0a' }} />}>
         <AboutSection />
       </Suspense>
+      <Suspense fallback={<div style={{ width: '100vw', backgroundColor: '#0a0a0a' }} />}>
+        <TeamSection />
+      </Suspense>
       <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#080808' }} />}>
         <CasesTestimonialsSection />
       </Suspense>
@@ -169,11 +177,11 @@ export default function App() {
 
       {/* FABs */}
       <div className="fixed right-5 bottom-8 z-40 flex flex-col gap-2 items-end">
-        <a href={WHATSAPP} target="_blank" rel="noopener noreferrer"
+        <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" onClick={() => ymGoal('whatsapp_click')}
           className="flex items-center gap-2 text-[12px] font-medium text-white/50 border border-white/15 rounded-full px-4 py-2 hover:text-white hover:border-white/35 hover:bg-white/5 transition-all duration-200 backdrop-blur-sm">
           <WhatsAppIcon size={13} />WhatsApp
         </a>
-        <a href={TELEGRAM} target="_blank" rel="noopener noreferrer"
+        <a href={TELEGRAM} target="_blank" rel="noopener noreferrer" onClick={() => ymGoal('telegram_click')}
           className="flex items-center gap-2 text-[12px] font-medium text-white/50 border border-white/15 rounded-full px-4 py-2 hover:text-white hover:border-white/35 hover:bg-white/5 transition-all duration-200 backdrop-blur-sm">
           <TelegramIcon size={13} />Telegram
         </a>

@@ -41,31 +41,31 @@ export default function HeroSection({ onScrollToServices }: {
   return (
     <section className="relative flex flex-col" style={{ minHeight: '100svh', backgroundColor: '#EDEEF5' }}>
 
-      {/* Background video */}
-      <div className="absolute top-[12vh] sm:top-[18vh] left-0 w-full pointer-events-none z-0"
+      {/* Background video — hidden on very small screens to save bandwidth */}
+      <div className="hidden sm:block absolute top-[18vh] left-0 w-full pointer-events-none z-0"
         style={{ height: '90vh' }}>
         <video
           src={HERO_VIDEO} autoPlay loop muted playsInline
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-0 left-0 w-full h-24 sm:h-32"
+        <div className="absolute top-0 left-0 w-full h-32"
           style={{ background: 'linear-gradient(to bottom, #EDEEF5, transparent)' }} />
         <div className="absolute bottom-0 left-0 w-full h-40"
           style={{ background: 'linear-gradient(to top, #EDEEF5, transparent)' }} />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex flex-col max-w-7xl w-full mx-auto px-6 md:px-16 lg:px-20 pt-28 sm:pt-36">
+      <div className="relative z-10 flex-1 flex flex-col max-w-7xl w-full mx-auto px-6 md:px-16 lg:px-20 pt-24 sm:pt-36">
         <div className="grid grid-cols-12 gap-x-4 md:gap-x-8">
           <div className="col-span-12 md:col-span-10 md:col-start-2">
 
             {/* Headline */}
             <motion.h1
-              className="leading-[1.05] tracking-tight mb-8"
+              className="leading-[1.08] tracking-tight mb-7"
               style={{
                 fontFamily: "'Outfit', 'Cormorant Garamond', serif",
                 fontWeight: 300,
-                fontSize: 'clamp(2.2rem, 5.8vw, 5.5rem)',
+                fontSize: 'clamp(2rem, 5.8vw, 5.5rem)',
               }}
               initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -110,9 +110,9 @@ export default function HeroSection({ onScrollToServices }: {
         </div>
       </div>
 
-      {/* Edge anchors */}
+      {/* Edge anchors — hidden on mobile to avoid clutter */}
       <motion.div
-        className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20"
+        className="hidden sm:block absolute right-8 top-1/2 -translate-y-1/2 z-20"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
       >
         <div className="flex flex-col text-[10px] font-semibold tracking-[0.12em] rounded-full overflow-hidden"

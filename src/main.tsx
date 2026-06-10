@@ -8,6 +8,9 @@ import AiContentPage from './pages/AiContentPage.tsx'
 import AiAutomationPage from './pages/AiAutomationPage.tsx'
 import AiBusinessPage from './pages/AiBusinessPage.tsx'
 import AiEducationPage from './pages/AiEducationPage.tsx'
+import FitLifePage from './pages/cases/FitLifePage.tsx'
+import SkyStorePage from './pages/cases/SkyStorePage.tsx'
+import DevGroupPage from './pages/cases/DevGroupPage.tsx'
 
 function Router() {
   const [path, setPath] = useState(window.location.pathname)
@@ -24,6 +27,9 @@ function Router() {
   if (path === '/ai-automation') return <AiAutomationPage />
   if (path === '/ai-business') return <AiBusinessPage />
   if (path === '/ai-education') return <AiEducationPage />
+  if (path === '/cases/fitlife') return <FitLifePage />
+  if (path === '/cases/skystore') return <SkyStorePage />
+  if (path === '/cases/devgroup') return <DevGroupPage />
   return <NotFoundPage />
 }
 

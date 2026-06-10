@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { X, Send, Check } from 'lucide-react'
 import { TelegramIcon, MaxIcon, TELEGRAM, MAX_LINK } from './icons'
 import { SECTIONS, type SectionData } from '../../data/sections'
+import { ymGoal } from '../../lib/metrika'
 
 function isValidContact(value: string): boolean {
   const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -33,6 +34,7 @@ export function ContactForm({ defaultService, onClose }: { defaultService?: stri
       })
       if (!res.ok) throw new Error()
       setSent(true)
+      ymGoal('lead_sent')
     } catch {
       setError('Ошибка отправки. Попробуйте ещё раз.')
     } finally {
