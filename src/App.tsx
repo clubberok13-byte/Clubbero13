@@ -37,6 +37,8 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // iOS has superior native momentum scroll — Lenis can hang the page there
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) return
     const lenis = new Lenis({ duration: 1.25, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) })
     lenisRef.current = lenis
     let rafId: number
