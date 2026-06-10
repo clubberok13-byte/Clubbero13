@@ -41,7 +41,9 @@ export default function ServicesSection({ activeTabIdx, onTabChange, onContact }
 
       <div className="absolute top-20 sm:top-24 left-0 right-0 z-20 flex items-center justify-center gap-1 px-4">
         {SECTIONS.map((s, i) => (
-          <button key={s.id} type="button" onClick={() => onTabChange(i)}
+          <button key={s.id} type="button"
+            onClick={() => navigate(SERVICE_ROUTES[s.id])}
+            onMouseEnter={() => onTabChange(i)}
             className={`shrink-0 transition-all duration-300 border rounded-full ${
               activeTabIdx === i
                 ? 'bg-white/12 text-white border-white/25 backdrop-blur-sm'
@@ -97,15 +99,19 @@ export default function ServicesSection({ activeTabIdx, onTabChange, onContact }
                 const Icon = svc.icon
                 return (
                   <motion.div key={svc.name} variants={staggerItem}>
-                    <GlowCard glowColor="blue" customSize className="w-full py-3 lg:py-4 px-5 flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-blue-500/10 border border-blue-400/20">
-                        <Icon size={18} className="text-blue-400" />
-                      </div>
-                      <div>
-                        <p className="text-white text-[14px] font-medium leading-snug mb-1">{svc.name}</p>
-                        <p className="text-white/40 text-[12px] leading-snug">{svc.desc}</p>
-                      </div>
-                    </GlowCard>
+                    <button type="button" className="w-full text-left group"
+                      onClick={() => navigate(SERVICE_ROUTES[section.id])}>
+                      <GlowCard glowColor="blue" customSize className="w-full py-3 lg:py-4 px-5 flex items-center gap-4 group-hover:bg-white/[0.04] transition-colors">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-blue-500/10 border border-blue-400/20">
+                          <Icon size={18} className="text-blue-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white text-[14px] font-medium leading-snug mb-1">{svc.name}</p>
+                          <p className="text-white/40 text-[12px] leading-snug">{svc.desc}</p>
+                        </div>
+                        <span className="text-white/20 group-hover:text-white/50 transition-colors text-[12px]">→</span>
+                      </GlowCard>
+                    </button>
                   </motion.div>
                 )
               })}

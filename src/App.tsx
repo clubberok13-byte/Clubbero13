@@ -4,9 +4,9 @@ import { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
-import { SECTIONS, HERO, VIDEO_SRC, type SectionData } from './data/sections'
+import { SECTIONS, HERO, type SectionData } from './data/sections'
 import { TelegramIcon, MaxIcon, WhatsAppIcon, LogoIcon, SvgDefs, TELEGRAM, MAX_LINK, WHATSAPP } from './components/ui/icons'
-import { GrainOverlay, Preloader, VideoModal, SectionProgress, ScrollProgress, ScrollToTop, CustomCursor, CursorTrail } from './components/ui/overlays'
+import { GrainOverlay, Preloader, SectionProgress, ScrollProgress, ScrollToTop, CustomCursor, CursorTrail } from './components/ui/overlays'
 import { ContactForm } from './components/ui/modals'
 import HeroSection from './components/sections/HeroSection'
 
@@ -27,7 +27,6 @@ export default function App() {
   const [sectionIdx, setSectionIdx] = useState(0)
   const [contactSection, setContactSection] = useState<SectionData | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [showVideo, setShowVideo] = useState(false)
   const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
@@ -146,7 +145,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Sections */}
-      <HeroSection onContact={() => setContactSection(SECTIONS[0])} onScrollToServices={scrollToServices} onPlayVideo={() => setShowVideo(true)} />
+      <HeroSection onContact={() => setContactSection(SECTIONS[0])} onScrollToServices={scrollToServices} />
       <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#080808' }} />}>
         <ServicesSection activeTabIdx={serviceTab} onTabChange={setServiceTab}
           onContact={(s) => setContactSection(s)} />
@@ -199,9 +198,6 @@ export default function App() {
       <ScrollToTop visible={showTopBtn} />
       {inServices && <CustomCursor accent={cursorAccent} />}
 
-      <AnimatePresence>
-        {showVideo && <VideoModal src={VIDEO_SRC} onClose={() => setShowVideo(false)} />}
-      </AnimatePresence>
     </div>
   )
 }
