@@ -42,6 +42,43 @@ export default function ChatWidget() {
     return () => clearTimeout(t)
   }, [])
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { message } = (e as CustomEvent<{ message: string }>).detail
+      if (!message) return
+      setOpen(true)
+      userInteracted.current = true
+      setNudge(false)
+      setTimeout(() => {
+        setInput(message)
+        setTimeout(() => {
+          setInput('')
+          const text = message.trim()
+          if (!text) return
+          const next: Message[] = [
+            { role: 'assistant', content: 'Привет! Я AI-ассистент LIDINC. Расскажи что тебя интересует — помогу подобрать услугу или ответить на вопросы 👋' },
+            { role: 'user', content: text },
+          ]
+          setMessages(next)
+          setLoading(true)
+          fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: next }),
+          })
+            .then(r => r.json())
+            .then((data: { reply?: string }) => {
+              if (data.reply) setMessages(m => [...m, { role: 'assistant', content: data.reply! }])
+            })
+            .catch(() => setMessages(m => [...m, { role: 'assistant', content: 'Ошибка соединения. Попробуй ещё раз.' }]))
+            .finally(() => setLoading(false))
+        }, 50)
+      }, 300)
+    }
+    window.addEventListener('lidinc-ask', handler)
+    return () => window.removeEventListener('lidinc-ask', handler)
+  }, [])
+
   const send = async () => {
     const text = input.trim()
     if (!text || loading) return
