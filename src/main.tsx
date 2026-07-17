@@ -12,6 +12,7 @@ import FitLifePage from './pages/cases/FitLifePage.tsx'
 import SkyStorePage from './pages/cases/SkyStorePage.tsx'
 import DevGroupPage from './pages/cases/DevGroupPage.tsx'
 
+// eslint-disable-next-line react-refresh/only-export-components
 function Router() {
   const [path, setPath] = useState(window.location.pathname)
 

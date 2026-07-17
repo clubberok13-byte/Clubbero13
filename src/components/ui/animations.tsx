@@ -59,6 +59,7 @@ export function SplitTitle({ text, className, style }: {
 // ── Text scramble ─────────────────────────────────────────────────────────────
 const CHARS = '!<>-_\\/[]{}=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTextScramble(text: string, active: boolean) {
   const [output, setOutput] = useState(text)
   useEffect(() => {
@@ -111,11 +112,12 @@ export function TiltCard({ children, className, intensity = 8 }: {
 }
 
 // ── Scramble triggered when element enters view ───────────────────────────────
+// eslint-disable-next-line react-refresh/only-export-components
 export function useScrambleOnView(text: string) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const [active, setActive] = useState(false)
-  useEffect(() => { if (inView) setActive(true) }, [inView])
+  useEffect(() => { if (inView) setActive(true) }, [inView]) // eslint-disable-line react-hooks/set-state-in-effect
   const scrambled = useTextScramble(text, active)
   return { ref, scrambled }
 }
@@ -138,11 +140,13 @@ export function SectionReveal({ children, className, delay = 0 }: {
 }
 
 // ── Stagger variants for lists ────────────────────────────────────────────────
+// eslint-disable-next-line react-refresh/only-export-components
 export const staggerContainer = {
   hidden: {},
   show: { transition: { staggerChildren: 0.09, delayChildren: 0.08 } },
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const staggerItem = {
   hidden: { opacity: 0, y: 18, filter: 'blur(4px)' },
   show: {

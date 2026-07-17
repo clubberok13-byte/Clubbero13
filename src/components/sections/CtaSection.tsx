@@ -3,8 +3,15 @@ import { Send } from 'lucide-react'
 import { FloatingOrbs, SplitTitle, staggerContainer, staggerItem, SectionReveal } from '../ui/animations'
 import { TELEGRAM, WHATSAPP } from '../ui/icons'
 
-const LOGOS = ['FitLife', 'SkyStore', 'DevGroup', 'RealTech', 'MediaHub', 'ProBrand']
+const LOGOS = ['FitLife', 'SkyStore', 'DevGroup']
 const EMAIL = 'clubberok13@gmail.com'
+
+const SERVICE_ROUTES: Record<string, string> = {
+  'AI Контент': '/ai-content',
+  'AI Автоматизация': '/ai-automation',
+  'AI для Бизнеса': '/ai-business',
+  'AI Обучение': '/ai-education',
+}
 
 const NAV_COLS: { title: string; links: { label: string; idx: number }[] }[] = [
   {
@@ -133,13 +140,23 @@ export default function CtaSection({ onContact, onScrollTo }: {
                 <ul className="space-y-2">
                   {col.links.map(link => (
                     <li key={link.label}>
-                      <button
-                        type="button"
-                        onClick={() => onScrollTo?.(link.idx)}
-                        className="text-white/45 text-[12px] hover:text-white/70 transition-colors"
-                      >
-                        {link.label}
-                      </button>
+                      {SERVICE_ROUTES[link.label] ? (
+                        <button
+                          type="button"
+                          onClick={() => { window.history.pushState({}, '', SERVICE_ROUTES[link.label]); window.dispatchEvent(new PopStateEvent('popstate')) }}
+                          className="text-white/45 text-[12px] hover:text-white/70 transition-colors"
+                        >
+                          {link.label}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => onScrollTo?.(link.idx)}
+                          className="text-white/45 text-[12px] hover:text-white/70 transition-colors"
+                        >
+                          {link.label}
+                        </button>
+                      )}
                     </li>
                   ))}
                 </ul>

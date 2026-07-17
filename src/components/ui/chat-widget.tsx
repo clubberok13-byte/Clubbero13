@@ -26,7 +26,7 @@ export default function ChatWidget() {
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 300)
-      setNudge(false)
+      setNudge(false) // eslint-disable-line react-hooks/set-state-in-effect
       userInteracted.current = true
     }
   }, [open])

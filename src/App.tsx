@@ -91,6 +91,7 @@ export default function App() {
         <motion.div className="hidden sm:flex items-center gap-6 sm:gap-10 rounded-xl px-6 sm:px-8 py-2.5 sm:py-3 backdrop-blur-md transition-colors duration-500"
           animate={{ backgroundColor: inServices ? 'rgba(255,255,255,0.1)' : '#EDEDED' }}
           transition={{ duration: 0.4 }}>
+          {/* eslint-disable-next-line react-hooks/refs */}
           {[
             { label: 'Услуги', onClick: scrollToServices },
             { label: 'О нас', onClick: () => scrollToSection(2) },

@@ -1,23 +1,31 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+function safeGet(key: string): string | null {
+  try { return localStorage.getItem(key) } catch { return null }
+}
+
+function safeSet(key: string, value: string) {
+  try { localStorage.setItem(key, value) } catch { /* storage unavailable */ }
+}
+
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    if (!localStorage.getItem('cookie_consent')) {
+    if (!safeGet('cookie_consent')) {
       const t = setTimeout(() => setVisible(true), 2500)
       return () => clearTimeout(t)
     }
   }, [])
 
   const accept = () => {
-    localStorage.setItem('cookie_consent', 'accepted')
+    safeSet('cookie_consent', 'accepted')
     setVisible(false)
   }
 
   const decline = () => {
-    localStorage.setItem('cookie_consent', 'declined')
+    safeSet('cookie_consent', 'declined')
     setVisible(false)
   }
 

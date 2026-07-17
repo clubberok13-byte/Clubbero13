@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef, type FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, ChevronDown, Send } from 'lucide-react'
+import { Check, ChevronDown, Play, Send } from 'lucide-react'
 import { FloatingOrbs, staggerContainer, staggerItem } from '../components/ui/animations'
 import { LogoIcon, SvgDefs, TELEGRAM, WHATSAPP } from '../components/ui/icons'
 import { GlowCard } from '../components/ui/spotlight-card'
+import { VideoModal } from '../components/ui/overlays'
 import { ymGoal } from '../lib/metrika'
 import type { SectionData } from '../data/sections'
 
@@ -52,6 +53,7 @@ function InlineContactForm({ accent, service }: { accent: string; service: strin
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
   const nameRef = useRef<HTMLInputElement>(null)
+  const honeypotRef = useRef<HTMLInputElement>(null)
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -62,7 +64,7 @@ function InlineContactForm({ accent, service }: { accent: string; service: strin
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), contact: contact.trim(), service, message: '' }),
+        body: JSON.stringify({ name: name.trim(), contact: contact.trim(), service, message: '', _h: honeypotRef.current?.value ?? '' }),
       })
       if (!res.ok) throw new Error('error')
       setSent(true)
@@ -84,7 +86,8 @@ function InlineContactForm({ accent, service }: { accent: string; service: strin
           <p className="text-white/40 text-[13px]">Свяжемся в течение нескольких часов.</p>
         </motion.div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ position: 'relative' }}>
+          <input ref={honeypotRef} type="text" name="_h" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-5000px', top: 'auto' }} />
           <p className="text-white text-[15px] font-medium mb-1">Оставить заявку</p>
           <p className="text-white/35 text-[12px] leading-relaxed mb-2">
             Ответим в течение 48 часов. Консультация бесплатна.
@@ -120,6 +123,28 @@ function InlineContactForm({ accent, service }: { accent: string; service: strin
   )
 }
 
+function VideoCard({ title, accent, onPlay }: {
+  title: string; accent: string; onPlay: () => void
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onPlay}
+      className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/[0.07] bg-white/[0.03] group flex flex-col items-center justify-center gap-3 hover:border-white/20 transition-colors duration-200"
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ background: `radial-gradient(ellipse 80% 80% at 50% 50%, ${accent}14 0%, transparent 70%)` }} />
+      <div className="w-14 h-14 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 z-10"
+        style={{ background: `${accent}22`, border: `1px solid ${accent}44` }}>
+        <Play size={20} fill={accent} style={{ color: accent, marginLeft: 2 }} />
+      </div>
+      <p className="text-white/55 text-[13px] font-medium group-hover:text-white/85 transition-colors duration-200 z-10 px-6 text-center leading-snug">{title}</p>
+    </motion.button>
+  )
+}
+
 export interface ServicePageProps {
   section: SectionData
   h1: string
@@ -127,9 +152,12 @@ export interface ServicePageProps {
   metaTitle: string
   metaDesc: string
   faq: { q: string; a: string }[]
+  videos?: { title: string; src: string }[]
 }
 
-export default function ServicePage({ section, h1, subtitle, metaTitle, metaDesc, faq }: ServicePageProps) {
+export default function ServicePage({ section, h1, subtitle, metaTitle, metaDesc, faq, videos }: ServicePageProps) {
+  const [activeVideo, setActiveVideo] = useState<string | null>(null)
+
   useEffect(() => {
     setMeta(metaTitle, metaDesc)
     return () => setMeta(
@@ -240,6 +268,25 @@ export default function ServicePage({ section, h1, subtitle, metaTitle, metaDesc
         </div>
       </section>
 
+      {/* Video Gallery */}
+      {videos && videos.length > 0 && (
+        <section className="px-6 sm:px-12 md:px-20 lg:px-28 pb-16">
+          <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-6" style={{ color: section.accent }}>
+            Примеры работ
+          </p>
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            variants={staggerContainer} initial="hidden" whileInView="show" viewport={{ once: true }}
+          >
+            {videos.map((v, i) => (
+              <motion.div key={i} variants={staggerItem}>
+                <VideoCard title={v.title} accent={section.accent} onPlay={() => setActiveVideo(v.src)} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
+
       {/* Price + CTA */}
       <section className="px-6 sm:px-12 md:px-20 lg:px-28 pb-16">
         <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] p-8 max-w-xl">
@@ -286,6 +333,10 @@ export default function ServicePage({ section, h1, subtitle, metaTitle, metaDesc
         </button>
         <p className="text-white/15 text-[11px]">© 2026 LIDINC. Все права защищены.</p>
       </footer>
+
+      <AnimatePresence>
+        {activeVideo && <VideoModal src={activeVideo} onClose={() => setActiveVideo(null)} />}
+      </AnimatePresence>
     </div>
   )
 }

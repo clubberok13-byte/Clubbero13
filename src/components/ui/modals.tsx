@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { X, Send, Check } from 'lucide-react'
 import { TelegramIcon, MaxIcon, TELEGRAM, MAX_LINK } from './icons'
@@ -7,8 +7,9 @@ import { ymGoal } from '../../lib/metrika'
 
 function isValidContact(value: string): boolean {
   const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-  const phone = /^[\+]?[\d\s\-\(\)]{7,20}$/
-  return email.test(value.trim()) || phone.test(value.trim())
+  const phone = /^[+]?[\d\s\-()+]{7,20}$/
+  const telegram = /^@[\w]{3,32}$|^(?:https?:\/\/)?t\.me\/[\w]{3,32}$/i
+  return email.test(value.trim()) || phone.test(value.trim()) || telegram.test(value.trim())
 }
 
 export function ContactForm({ defaultService, onClose }: { defaultService?: string; onClose: () => void }) {
@@ -17,6 +18,7 @@ export function ContactForm({ defaultService, onClose }: { defaultService?: stri
   const [error, setError] = useState('')
   const [contactError, setContactError] = useState('')
   const [form, setForm] = useState({ name: '', contact: '', message: '', service: defaultService ?? SECTIONS[0].category })
+  const honeypotRef = useRef<HTMLInputElement>(null)
 
   const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -30,7 +32,7 @@ export function ContactForm({ defaultService, onClose }: { defaultService?: stri
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, _h: honeypotRef.current?.value ?? '' }),
       })
       if (!res.ok) throw new Error()
       setSent(true)
@@ -61,7 +63,8 @@ export function ContactForm({ defaultService, onClose }: { defaultService?: stri
             <p className="text-gray-400 text-sm">Свяжемся с вами в течение часа.</p>
           </div>
         ) : (
-          <form onSubmit={submit} className="space-y-4">
+          <form onSubmit={submit} className="space-y-4" style={{ position: 'relative' }}>
+            <input ref={honeypotRef} type="text" name="_h" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-5000px', top: 'auto' }} />
             <div>
               <label className="block text-[11px] text-gray-400 mb-1.5 tracking-wide uppercase">Имя</label>
               <input required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Иван Иванов"

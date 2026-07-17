@@ -18,16 +18,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
+  const contentLength = Number(req.headers['content-length'] ?? 0)
+  if (contentLength > 10_000) return res.status(413).json({ error: 'Request too large' })
+
   const ip = getClientIp(req)
   if (!checkRateLimit(ip, 3, 10 * 60_000)) {
     return res.status(429).json({ error: 'Too many requests. Please try again later.' })
   }
 
-  const { name, contact, service, message } = req.body as {
-    name: string; contact: string; service: string; message: string
+  const { name, contact, service, message, _h } = req.body as {
+    name: string; contact: string; service: string; message: string; _h?: string
   }
 
+  // Honeypot: bots fill this field, humans don't
+  if (_h) return res.status(200).json({ ok: true })
+
   if (!name || !contact) return res.status(400).json({ error: 'Missing required fields' })
+
+  const isValidContact = (v: string) => {
+    const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+    const phone = /^[+]?[\d\s\-()+]{7,20}$/
+    const telegram = /^@[\w]{3,32}$|^(?:https?:\/\/)?t\.me\/[\w]{3,32}$/i
+    return email.test(v) || phone.test(v) || telegram.test(v)
+  }
+  if (!isValidContact(contact.trim())) {
+    return res.status(400).json({ error: 'Invalid contact format' })
+  }
 
   const safeName    = escapeHtml(String(name).slice(0, 200))
   const safeContact = escapeHtml(String(contact).slice(0, 200))

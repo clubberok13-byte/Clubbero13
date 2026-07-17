@@ -39,6 +39,7 @@ function HeroCTAB() {
   const [contact, setContact] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
+  const honeypotRef = useRef<HTMLInputElement>(null)
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -48,7 +49,7 @@ function HeroCTAB() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), contact: contact.trim(), service: 'Hero B', message: '' }),
+        body: JSON.stringify({ name: name.trim(), contact: contact.trim(), service: 'Hero B', message: '', _h: honeypotRef.current?.value ?? '' }),
       })
       if (!res.ok) throw new Error()
       setSent(true)
@@ -81,6 +82,7 @@ function HeroCTAB() {
           <motion.form
             onSubmit={handleSubmit}
             className="flex flex-col gap-2 w-full max-w-sm"
+            style={{ position: 'relative' }}
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
@@ -92,6 +94,7 @@ function HeroCTAB() {
               </motion.p>
             ) : (
               <>
+                <input ref={honeypotRef} type="text" name="_h" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-5000px', top: 'auto' }} />
                 <input
                   value={name} onChange={e => setName(e.target.value)}
                   placeholder="Ваше имя" required autoFocus
@@ -123,14 +126,12 @@ export default function HeroSection({ onScrollToServices }: {
   onScrollToServices: () => void
 }) {
   const [query, setQuery] = useState('')
-  const [variant, setVariant] = useState<'A' | 'B'>('A')
+  const [variant] = useState<'A' | 'B'>(() => getHeroVariant())
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const v = getHeroVariant()
-    setVariant(v)
-    ymGoal(`hero_${v.toLowerCase()}_view`)
-  }, [])
+    ymGoal(`hero_${variant.toLowerCase()}_view`)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -219,23 +220,6 @@ export default function HeroSection({ onScrollToServices }: {
           </div>
         </div>
       </div>
-
-      {/* Edge anchors — hidden on mobile to avoid clutter */}
-      <motion.div
-        className="hidden sm:block absolute right-8 top-1/2 -translate-y-1/2 z-20"
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-      >
-        <div className="flex flex-col text-[10px] font-semibold tracking-[0.12em] rounded-full overflow-hidden"
-          style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(8px)', border: '1px solid rgba(0,0,0,0.08)' }}>
-          {['RU', 'EN'].map((lang, i) => (
-            <button key={lang} type="button"
-              className="px-3 py-1.5 transition-colors"
-              style={{ color: i === 0 ? '#1a1a1a' : '#bbb', fontFamily: "'Inter', sans-serif" }}>
-              {lang}
-            </button>
-          ))}
-        </div>
-      </motion.div>
 
       <motion.span className="absolute bottom-20 left-6 sm:left-8 z-20 text-[10px] tracking-[0.2em] select-none"
         style={{ color: '#bbb', fontFamily: "'Inter', sans-serif" }}

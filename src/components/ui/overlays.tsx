@@ -150,7 +150,7 @@ export function CursorTrail({ active }: { active: boolean }) {
   const [trail, setTrail] = useState<{ id: number; x: number; y: number }[]>([])
 
   useEffect(() => {
-    if (!active) { setTrail([]); return }
+    if (!active) { setTrail([]); return } // eslint-disable-line react-hooks/set-state-in-effect
     let id = 0
     const move = (e: MouseEvent) => {
       setTrail(t => [...t.slice(-10), { id: id++, x: e.clientX, y: e.clientY }])
