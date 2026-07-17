@@ -4,7 +4,7 @@ import { SECTIONS } from '../data/sections'
 const section = SECTIONS[0]
 
 const VIDEOS = [
-  { title: 'AI-аватар', src: '/videos/avatar-demo-web.mp4' },
+  { title: 'AI-аватар', src: '/videos/avatar-demo-web.mp4', thumb: '/videos/avatar-demo-thumb.jpg' },
 ]
 
 const FAQ = [

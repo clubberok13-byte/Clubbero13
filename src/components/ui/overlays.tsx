@@ -55,7 +55,7 @@ export function Preloader({ done }: { done: boolean }) {
   )
 }
 
-export function VideoModal({ src, onClose }: { src: string; onClose: () => void }) {
+export function VideoModal({ src, poster, onClose }: { src: string; poster?: string; onClose: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -69,7 +69,7 @@ export function VideoModal({ src, onClose }: { src: string; onClose: () => void 
         initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }} transition={{ type: 'spring', damping: 26 }}
         onClick={e => e.stopPropagation()}>
-        <video src={src} controls playsInline preload="auto" className="w-full h-full rounded-2xl object-cover bg-black" />
+        <video src={src} poster={poster} controls playsInline preload="auto" className="w-full h-full rounded-2xl object-cover bg-black" />
         <button type="button" onClick={onClose}
           className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/60 hover:text-white transition-colors">
           <X size={14} />
