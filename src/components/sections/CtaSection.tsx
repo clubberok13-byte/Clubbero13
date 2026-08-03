@@ -1,9 +1,8 @@
 import { motion } from 'framer-motion'
 import { Send } from 'lucide-react'
-import { FloatingOrbs, SplitTitle, staggerContainer, staggerItem, SectionReveal } from '../ui/animations'
+import { FloatingOrbs, SplitTitle, SectionReveal } from '../ui/animations'
 import { TELEGRAM, WHATSAPP } from '../ui/icons'
 
-const LOGOS = ['FitLife', 'SkyStore', 'DevGroup']
 const EMAIL = 'clubberok13@gmail.com'
 
 const SERVICE_ROUTES: Record<string, string> = {
@@ -57,25 +56,6 @@ export default function CtaSection({ onContact, onScrollTo }: {
 
       {/* CTA content — centred in the upper portion */}
       <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 md:px-20 lg:px-28 w-full">
-        {/* Logos strip with stagger */}
-        <motion.div
-          className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-12"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-        >
-          <motion.span variants={staggerItem} className="text-white/20 text-[11px] tracking-[0.2em] uppercase shrink-0">
-            Нам доверяют
-          </motion.span>
-          {LOGOS.map(logo => (
-            <motion.span key={logo} variants={staggerItem}
-              className="text-white/30 text-[13px] font-medium tracking-wide hover:text-white/55 transition-colors duration-300">
-              {logo}
-            </motion.span>
-          ))}
-        </motion.div>
-
         <SplitTitle
           text={'Готовы\nначать?'}
           className="text-[3rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[6.5rem] text-white tracking-tight mb-5"
