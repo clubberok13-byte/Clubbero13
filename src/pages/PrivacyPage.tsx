@@ -58,7 +58,13 @@ export default function PrivacyPage() {
         </button>
         <div className="ml-auto flex items-center gap-2">
           <svg width="14" height="14" viewBox="0 0 256 256" fill="none">
-            <path fill="url(#lidinc-grad)" d="M 160 88 L 194 34 L 216 0 L 256 0 L 256 40 L 221.5 93.5 L 200 128 L 256 128 L 256 256 L 96 256 L 96 168 L 64.246 220 L 40 256 L 0 256 L 0 216 L 34 162 L 56 128 L 0 128 L 0 0 L 160 0 Z" />
+            <defs>
+              <linearGradient id="lidinc-grad-privacy" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#a78bfa" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#lidinc-grad-privacy)" d="M 160 88 L 194 34 L 216 0 L 256 0 L 256 40 L 221.5 93.5 L 200 128 L 256 128 L 256 256 L 96 256 L 96 168 L 64.246 220 L 40 256 L 0 256 L 0 216 L 34 162 L 56 128 L 0 128 L 0 0 L 160 0 Z" />
           </svg>
           <span className="text-white/50 text-[12px] font-medium tracking-[0.1em]">LIDINC</span>
         </div>
