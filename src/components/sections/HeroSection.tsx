@@ -204,8 +204,8 @@ export default function HeroSection({ onScrollToServices }: {
                     className="flex-1 bg-transparent text-[13px] text-[#1a1a1a] placeholder-[#b0b0b0] outline-none min-w-0"
                     style={{ fontFamily: "'Inter', sans-serif" }}
                   />
-                  <button type="submit"
-                    className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
+                  <button type="submit" aria-label="Отправить"
+                    className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
                     style={{ background: '#1a1a1a' }}>
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                       <path d="M2 7h10M8 3l4 4-4 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

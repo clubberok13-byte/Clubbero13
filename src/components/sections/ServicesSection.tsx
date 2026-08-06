@@ -49,10 +49,10 @@ export default function ServicesSection({ activeTabIdx, onTabChange, onContact }
                 ? 'bg-white/12 text-white border-white/25 backdrop-blur-sm'
                 : 'text-white/35 border-transparent hover:text-white/60'
             }`}>
-            <span className="sm:hidden block text-[11px] tracking-[0.1em] px-3 py-1.5">
+            <span className="sm:hidden block text-[11px] tracking-[0.1em] px-3 py-3">
               {s.category.split(' / ')[0]}
             </span>
-            <span className="hidden sm:block text-[11px] tracking-[0.12em] uppercase px-4 py-1.5 whitespace-nowrap">
+            <span className="hidden sm:block text-[11px] tracking-[0.12em] uppercase px-4 py-3 whitespace-nowrap">
               {s.category.split(' / ')[1]}
             </span>
           </button>

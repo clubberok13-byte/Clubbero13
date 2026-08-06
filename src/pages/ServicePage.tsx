@@ -162,13 +162,33 @@ export default function ServicePage({ section, h1, subtitle, metaTitle, metaDesc
   const [activeVideo, setActiveVideo] = useState<{ src: string; poster?: string } | null>(null)
 
   useEffect(() => {
-    setMeta(metaTitle, metaDesc, window.location.href)
-    return () => setMeta(
-      'LIDINC — AI-агентство: чат-боты, автоматизация и AI-контент под ключ',
-      'Внедряем AI в бизнес под ключ. Разработка чат-ботов от 15 000 ₽, автоматизация бизнес-процессов, AI-контент и обучение команд.',
-      'https://lidinc.ru/'
-    )
-  }, [metaTitle, metaDesc])
+    const url = window.location.href
+    setMeta(metaTitle, metaDesc, url)
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: metaTitle.replace(' | LIDINC', ''),
+      description: metaDesc,
+      url,
+      provider: { '@type': 'Organization', name: 'LIDINC', url: 'https://lidinc.ru' },
+      offers: { '@type': 'Offer', price: section.price.replace(/\D/g, ''), priceCurrency: 'RUB', priceSpecification: { '@type': 'PriceSpecification', minPrice: section.price.replace(/\D/g, ''), priceCurrency: 'RUB' } },
+    }
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.id = 'service-schema'
+    script.textContent = JSON.stringify(schema)
+    document.head.appendChild(script)
+
+    return () => {
+      document.getElementById('service-schema')?.remove()
+      setMeta(
+        'LIDINC — AI-агентство: чат-боты, автоматизация и AI-контент под ключ',
+        'Внедряем AI в бизнес под ключ. Разработка чат-ботов от 15 000 ₽, автоматизация бизнес-процессов, AI-контент и обучение команд.',
+        'https://lidinc.ru/'
+      )
+    }
+  }, [metaTitle, metaDesc, section.price])
 
   return (
     <div className="bg-[#080808] text-white min-h-screen">
