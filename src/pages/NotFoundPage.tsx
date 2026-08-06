@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 function navigate(to: string) {
@@ -6,6 +7,17 @@ function navigate(to: string) {
 }
 
 export default function NotFoundPage() {
+  useEffect(() => {
+    document.title = '404 — Страница не найдена | LIDINC'
+    let robotsMeta = document.querySelector('meta[name="robots"]')
+    if (!robotsMeta) {
+      robotsMeta = document.createElement('meta')
+      robotsMeta.setAttribute('name', 'robots')
+      document.head.appendChild(robotsMeta)
+    }
+    robotsMeta.setAttribute('content', 'noindex, nofollow')
+    return () => { robotsMeta?.setAttribute('content', 'index, follow') }
+  }, [])
   return (
     <div className="min-h-screen bg-[#060606] flex flex-col items-center justify-center px-6 text-center">
       {/* Orb */}

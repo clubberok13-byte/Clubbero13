@@ -17,10 +17,11 @@ export function FloatingOrbs({ accent }: { accent: string }) {
           style={{
             width: orb.size, height: orb.size,
             background: `radial-gradient(circle, ${accent}30 0%, ${accent}08 60%, transparent 100%)`,
-            left: orb.x[0], top: orb.y[0],
+            left: 0, top: 0,
             filter: 'blur(40px)',
+            willChange: 'transform',
           }}
-          animate={{ left: orb.x, top: orb.y }}
+          animate={{ x: orb.x, y: orb.y }}
           transition={{ duration: orb.duration, repeat: Infinity, ease: 'easeInOut', delay: i * 3 }}
         />
       ))}

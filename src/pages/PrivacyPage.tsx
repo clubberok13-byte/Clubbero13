@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { TELEGRAM } from '../components/ui/icons'
 
@@ -44,6 +45,14 @@ const SECTIONS = [
 ]
 
 export default function PrivacyPage() {
+  useEffect(() => {
+    document.title = 'Политика конфиденциальности | LIDINC'
+    document.querySelector('meta[name="description"]')?.setAttribute('content', 'Политика конфиденциальности LIDINC — AI-агентство. Информация о сборе и обработке персональных данных.')
+    return () => {
+      document.title = 'LIDINC — AI-агентство: чат-боты, автоматизация и AI-контент под ключ'
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Nav */}

@@ -1,13 +1,14 @@
-import { StrictMode, useState, useEffect } from 'react'
+import { StrictMode, useState, useEffect, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import PrivacyPage from './pages/PrivacyPage.tsx'
-import NotFoundPage from './pages/NotFoundPage.tsx'
-import AiContentPage from './pages/AiContentPage.tsx'
-import AiAutomationPage from './pages/AiAutomationPage.tsx'
-import AiBusinessPage from './pages/AiBusinessPage.tsx'
-import AiEducationPage from './pages/AiEducationPage.tsx'
+
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage.tsx'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage.tsx'))
+const AiContentPage = lazy(() => import('./pages/AiContentPage.tsx'))
+const AiAutomationPage = lazy(() => import('./pages/AiAutomationPage.tsx'))
+const AiBusinessPage = lazy(() => import('./pages/AiBusinessPage.tsx'))
+const AiEducationPage = lazy(() => import('./pages/AiEducationPage.tsx'))
 
 // eslint-disable-next-line react-refresh/only-export-components
 function Router() {
@@ -20,12 +21,17 @@ function Router() {
   }, [])
 
   if (path === '/') return <App />
-  if (path === '/privacy') return <PrivacyPage />
-  if (path === '/ai-content') return <AiContentPage />
-  if (path === '/ai-automation') return <AiAutomationPage />
-  if (path === '/ai-business') return <AiBusinessPage />
-  if (path === '/ai-education') return <AiEducationPage />
-  return <NotFoundPage />
+
+  return (
+    <Suspense fallback={null}>
+      {path === '/privacy' ? <PrivacyPage /> :
+       path === '/ai-content' ? <AiContentPage /> :
+       path === '/ai-automation' ? <AiAutomationPage /> :
+       path === '/ai-business' ? <AiBusinessPage /> :
+       path === '/ai-education' ? <AiEducationPage /> :
+       <NotFoundPage />}
+    </Suspense>
+  )
 }
 
 createRoot(document.getElementById('root')!).render(

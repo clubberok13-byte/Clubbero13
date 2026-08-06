@@ -24,6 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (ALLOWED_ORIGINS.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin)
   }
+  res.setHeader('Vary', 'Origin')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
@@ -34,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (contentLength > 50_000) return res.status(413).json({ error: 'Request too large' })
 
   const ip = getClientIp(req)
-  if (!checkRateLimit(ip, 12, 60_000)) {
+  if (!await checkRateLimit(ip, 'chat')) {
     return res.status(429).json({ error: 'Too many requests. Please wait a minute.' })
   }
 

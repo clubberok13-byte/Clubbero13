@@ -13,11 +13,14 @@ function navigate(to: string) {
   window.dispatchEvent(new PopStateEvent('popstate'))
 }
 
-function setMeta(title: string, description: string) {
+function setMeta(title: string, description: string, url?: string) {
   document.title = title
   document.querySelector('meta[name="description"]')?.setAttribute('content', description)
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', title)
   document.querySelector('meta[property="og:description"]')?.setAttribute('content', description)
+  const canonical = document.querySelector('link[rel="canonical"]')
+  if (canonical && url) canonical.setAttribute('href', url)
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', url ?? 'https://lidinc.ru/')
 }
 
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -134,7 +137,7 @@ function VideoCard({ title, thumb, onPlay }: {
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
     >
-      {thumb && <img src={thumb} alt="" className="absolute inset-0 w-full h-full object-cover opacity-65 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none" />}
+      {thumb && <img src={thumb} alt={title} className="absolute inset-0 w-full h-full object-cover opacity-65 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none" />}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
       <div className="w-14 h-14 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 z-10 backdrop-blur-sm"
         style={{ background: 'rgba(0,0,0,0.45)', border: '1.5px solid rgba(255,255,255,0.3)' }}>
@@ -159,10 +162,11 @@ export default function ServicePage({ section, h1, subtitle, metaTitle, metaDesc
   const [activeVideo, setActiveVideo] = useState<{ src: string; poster?: string } | null>(null)
 
   useEffect(() => {
-    setMeta(metaTitle, metaDesc)
+    setMeta(metaTitle, metaDesc, window.location.href)
     return () => setMeta(
       'LIDINC — AI-агентство: чат-боты, автоматизация и AI-контент под ключ',
-      'Внедряем AI в бизнес под ключ. Разработка чат-ботов от 15 000 ₽, автоматизация бизнес-процессов, AI-контент и обучение команд.'
+      'Внедряем AI в бизнес под ключ. Разработка чат-ботов от 15 000 ₽, автоматизация бизнес-процессов, AI-контент и обучение команд.',
+      'https://lidinc.ru/'
     )
   }, [metaTitle, metaDesc])
 
