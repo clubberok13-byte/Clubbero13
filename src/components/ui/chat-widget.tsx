@@ -141,7 +141,7 @@ export default function ChatWidget() {
                   <p className="text-white/35 text-[11px] mt-0.5">Обычно отвечает мгновенно</p>
                 </div>
               </div>
-              <button type="button" onClick={() => setOpen(false)} className="text-white/30 hover:text-white transition-colors">
+              <button type="button" onClick={() => setOpen(false)} aria-label="Закрыть чат" className="p-1 text-white/30 hover:text-white transition-colors">
                 <X size={16} />
               </button>
             </div>
@@ -186,7 +186,8 @@ export default function ChatWidget() {
                   className="flex-1 bg-transparent text-[13px] text-white placeholder-white/25 focus:outline-none"
                 />
                 <button type="button" onClick={send} disabled={!input.trim() || loading}
-                  className="text-blue-400 disabled:text-white/20 hover:text-blue-300 transition-colors">
+                  aria-label="Отправить сообщение"
+                  className="p-1 text-blue-400 disabled:text-white/20 hover:text-blue-300 transition-colors">
                   <Send size={15} />
                 </button>
               </div>
@@ -217,6 +218,7 @@ export default function ChatWidget() {
       <motion.button
         type="button"
         onClick={() => setOpen(o => !o)}
+        aria-label={open ? 'Закрыть чат' : 'Открыть чат'}
         className="fixed bottom-5 left-5 z-50 w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center shadow-xl transition-colors"
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
