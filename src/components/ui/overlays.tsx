@@ -147,29 +147,52 @@ export function CustomCursor({ accent }: { accent: string }) {
 }
 
 export function CursorTrail({ active }: { active: boolean }) {
-  const [trail, setTrail] = useState<{ id: number; x: number; y: number }[]>([])
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const trailRef = useRef<{ x: number; y: number }[]>([])
+  const rafRef = useRef<number>(0)
 
   useEffect(() => {
-    if (!active) { setTrail([]); return } // eslint-disable-line react-hooks/set-state-in-effect
-    let id = 0
-    const move = (e: MouseEvent) => {
-      setTrail(t => [...t.slice(-10), { id: id++, x: e.clientX, y: e.clientY }])
+    const canvas = canvasRef.current
+    if (!canvas || !active) return
+
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    const ctx = canvas.getContext('2d')!
+
+    const onMove = (e: MouseEvent) => {
+      trailRef.current.push({ x: e.clientX, y: e.clientY })
+      if (trailRef.current.length > 12) trailRef.current.shift()
     }
-    window.addEventListener('mousemove', move, { passive: true })
-    return () => window.removeEventListener('mousemove', move)
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const t = trailRef.current
+      t.forEach((dot, i) => {
+        const ratio = (i + 1) / t.length
+        ctx.beginPath()
+        ctx.arc(dot.x, dot.y, ratio * 4, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(96,165,250,${ratio * 0.35})`
+        ctx.fill()
+      })
+      rafRef.current = requestAnimationFrame(draw)
+    }
+
+    const onResize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
+
+    window.addEventListener('mousemove', onMove, { passive: true })
+    window.addEventListener('resize', onResize)
+    rafRef.current = requestAnimationFrame(draw)
+
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('resize', onResize)
+      cancelAnimationFrame(rafRef.current)
+      trailRef.current = []
+    }
   }, [active])
 
-  if (!active || trail.length === 0) return null
-  return (
-    <>
-      {trail.map((dot, i) => (
-        <div key={dot.id} className="fixed pointer-events-none z-[49] rounded-full bg-blue-400"
-          style={{ left: dot.x - 3, top: dot.y - 3, width: 6, height: 6,
-            opacity: ((i + 1) / trail.length) * 0.35,
-            transform: `scale(${((i + 1) / trail.length) * 0.9})` }} />
-      ))}
-    </>
-  )
+  if (!active) return null
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-[49]" aria-hidden="true" />
 }
 
 export function MagneticButton({ children, className }: { children: React.ReactNode; className?: string }) {
