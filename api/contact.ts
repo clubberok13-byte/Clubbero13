@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (contentLength > 10_000) return res.status(413).json({ error: 'Request too large' })
 
   const ip = getClientIp(req)
-  if (!checkRateLimit(ip, 3, 10 * 60_000)) {
+  if (!await checkRateLimit(ip)) {
     return res.status(429).json({ error: 'Too many requests. Please try again later.' })
   }
 

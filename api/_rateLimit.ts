@@ -1,38 +1,35 @@
-interface Entry { count: number; reset: number }
-
-const store = new Map<string, Entry>()
-
-function cleanup() {
-  const now = Date.now()
-  for (const [key, val] of store) {
-    if (now > val.reset) store.delete(key)
-  }
-}
-
-export function checkRateLimit(ip: string, limit: number, windowMs: number): boolean {
-  if (store.size > 5000) cleanup()
-
-  const now = Date.now()
-  const entry = store.get(ip)
-
-  if (!entry || now > entry.reset) {
-    store.set(ip, { count: 1, reset: now + windowMs })
-    return true
-  }
-
-  if (entry.count >= limit) return false
-  entry.count++
-  return true
-}
-
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
 import type { VercelRequest } from '@vercel/node'
+
+let ratelimit: Ratelimit | null = null
+
+function getRatelimit(): Ratelimit | null {
+  if (ratelimit) return ratelimit
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (!url || !token) return null
+  ratelimit = new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(3, '10 m'),
+    prefix: 'lidinc:contact',
+  })
+  return ratelimit
+}
+
+export async function checkRateLimit(ip: string): Promise<boolean> {
+  const rl = getRatelimit()
+  if (!rl) return true
+  const { success } = await rl.limit(ip)
+  return success
+}
 
 export function getClientIp(req: VercelRequest): string {
   const forwarded = req.headers['x-forwarded-for']
   const real = req.headers['x-real-ip']
-  const ip =
+  return (
     (typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : undefined) ||
     (typeof real === 'string' ? real : undefined) ||
     'unknown'
-  return ip
+  )
 }
