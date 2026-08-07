@@ -1,0 +1,12 @@
+{
+  "name": "LIDINC — AI-агентство",
+  "short_name": "LIDINC",
+  "description": "AI-агентство полного цикла — чат-боты, автоматизация и AI-контент под ключ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any maskable" }
+  ]
+}

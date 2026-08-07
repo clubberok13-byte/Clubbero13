@@ -1,7 +1,18 @@
 import { StrictMode, useState, useEffect, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
+import * as Sentry from '@sentry/react'
 import './index.css'
 import App from './App.tsx'
+
+if (import.meta.env.VITE_SENTRY_DSN) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    environment: import.meta.env.MODE,
+    tracesSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+    integrations: [Sentry.replayIntegration({ maskAllText: false, blockAllMedia: false })],
+  })
+}
 
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage.tsx'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.tsx'))
