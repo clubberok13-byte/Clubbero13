@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import * as Sentry from '@sentry/react'
 import './index.css'
 import App from './App.tsx'
+import ErrorBoundary from './components/ui/error-boundary.tsx'
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
@@ -47,6 +48,8 @@ function Router() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Router />
+    <ErrorBoundary>
+      <Router />
+    </ErrorBoundary>
   </StrictMode>,
 )
