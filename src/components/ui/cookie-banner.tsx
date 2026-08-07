@@ -22,6 +22,8 @@ export default function CookieBanner() {
   const accept = () => {
     safeSet('cookie_consent', 'accepted')
     setVisible(false)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any).gtag?.('consent', 'update', { analytics_storage: 'granted' })
   }
 
   const decline = () => {
