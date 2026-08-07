@@ -13,10 +13,11 @@ export const ContainerScroll = ({
   const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    let t: ReturnType<typeof setTimeout>
+    const check = () => { clearTimeout(t); t = setTimeout(() => setIsMobile(window.innerWidth <= 768), 120) }
+    check()
+    window.addEventListener("resize", check)
+    return () => { window.removeEventListener("resize", check); clearTimeout(t) }
   }, []);
 
   const scaleDimensions = () => (isMobile ? [0.7, 0.9] : [1.05, 1]);

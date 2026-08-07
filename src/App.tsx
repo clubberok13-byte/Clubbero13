@@ -67,7 +67,10 @@ export default function App() {
   const scrollToServices = useCallback(() => scrollToSection(1), [scrollToSection])
   const scrollToHero = useCallback(() => scrollToSection(0), [scrollToSection])
 
-  const cursorAccent = `${[HERO.accent, SECTIONS[serviceTab]?.accent ?? '#3b82f6'][Math.min(sectionIdx, 1)] ?? HERO.accent}55`
+  const cursorAccent = useMemo(
+    () => `${[HERO.accent, SECTIONS[serviceTab]?.accent ?? '#3b82f6'][Math.min(sectionIdx, 1)] ?? HERO.accent}55`,
+    [serviceTab, sectionIdx]
+  )
 
   return (
     <div className="bg-[#f0f0ee] text-gray-900">

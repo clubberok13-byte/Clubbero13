@@ -5,9 +5,22 @@ import { X } from 'lucide-react'
 const LOGO_PATH = 'M 160 88 L 194 34 L 216 0 L 256 0 L 256 40 L 221.5 93.5 L 200 128 L 256 128 L 256 256 L 96 256 L 96 168 L 64.246 220 L 40 256 L 0 256 L 0 216 L 34 162 L 56 128 L 0 128 L 0 0 L 160 0 Z'
 
 export function GrainOverlay() {
+  const divRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onVisibility = () => {
+      const paused = document.hidden
+      if (divRef.current) divRef.current.style.animationPlayState = paused ? 'paused' : 'running'
+      document.documentElement.classList.toggle('page-hidden', paused)
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => document.removeEventListener('visibilitychange', onVisibility)
+  }, [])
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 9997 }} aria-hidden="true">
       <div
+        ref={divRef}
         style={{
           position: 'absolute', inset: '-150px',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
