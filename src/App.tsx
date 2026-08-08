@@ -79,7 +79,7 @@ export default function App() {
 
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-center pt-4 sm:pt-6 px-4 sm:px-8 gap-2 sm:gap-3">
-        <motion.button type="button" onClick={scrollToHero}
+        <motion.button type="button" onClick={scrollToHero} aria-label="На главную — LIDINC"
           className="flex items-center gap-2 rounded-full px-3 sm:px-4 h-10 sm:h-11 shrink-0 backdrop-blur-md transition-colors duration-500"
           animate={{ backgroundColor: inServices ? 'rgba(255,255,255,0.12)' : '#EDEDED' }}
           transition={{ duration: 0.4 }}>
@@ -115,7 +115,7 @@ export default function App() {
           )}
         </motion.div>
 
-        <button type="button"
+        <button type="button" aria-label="Открыть меню"
           className={`sm:hidden ml-auto transition-colors ${inServices ? 'text-white/60 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
           onClick={() => setMenuOpen(true)}>
           <Menu size={20} />
@@ -156,6 +156,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Sections */}
+      <main>
       <HeroSection onContact={() => setContactSection(SECTIONS[0])} onScrollToServices={scrollToServices} />
       <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#080808' }} />}>
         <ServicesSection activeTabIdx={serviceTab} onTabChange={setServiceTab}
@@ -180,6 +181,7 @@ export default function App() {
         <CtaSection onContact={() => setContactSection(SECTIONS[0])}
           onScrollTo={(idx) => lenisRef.current?.scrollTo(idx * window.innerHeight)} />
       </Suspense>
+      </main>
 
       {/* FABs */}
       <div className="fixed right-5 bottom-8 z-40 flex flex-col gap-2 items-end">

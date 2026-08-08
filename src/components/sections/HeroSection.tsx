@@ -181,12 +181,12 @@ export default function HeroSection({ onScrollToServices }: {
             >
               <span style={{ color: '#1a1a1a' }}>LIDINC создаёт</span>
               <br />
-              <span style={{ color: '#8e8e8e' }}>AI-решения для</span>
+              <span style={{ color: '#6b6b6b' }}>AI-решения для</span>
               <br />
-              <span style={{ color: '#8e8e8e' }}>вашего бизнеса</span>
+              <span style={{ color: '#6b6b6b' }}>вашего бизнеса</span>
               <SparkPill />
               <br />
-              <span style={{ color: '#8e8e8e' }}>под ключ за 48 часов.</span>
+              <span style={{ color: '#6b6b6b' }}>под ключ за 48 часов.</span>
             </motion.h1>
 
             {/* CTA — A/B */}
@@ -224,13 +224,13 @@ export default function HeroSection({ onScrollToServices }: {
       </div>
 
       <motion.span className="absolute bottom-20 left-6 sm:left-8 z-20 text-[10px] tracking-[0.2em] select-none"
-        style={{ color: '#bbb', fontFamily: "'Inter', sans-serif" }}
+        style={{ color: '#bbb', fontFamily: "'Inter', sans-serif" }} aria-hidden="true"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
         2026
       </motion.span>
 
       <motion.span className="absolute bottom-20 right-6 sm:right-8 z-20 text-[10px] tracking-[0.2em] uppercase select-none"
-        style={{ color: '#bbb', fontFamily: "'Inter', sans-serif" }}
+        style={{ color: '#bbb', fontFamily: "'Inter', sans-serif" }} aria-hidden="true"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
         AI услуги
       </motion.span>
