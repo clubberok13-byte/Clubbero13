@@ -165,19 +165,38 @@ export default function ServicePage({ section, h1, subtitle, metaTitle, metaDesc
     const url = window.location.href
     setMeta(metaTitle, metaDesc, url)
 
-    const schema = {
-      '@context': 'https://schema.org',
-      '@type': 'Service',
-      name: metaTitle.replace(' | LIDINC', ''),
-      description: metaDesc,
-      url,
-      provider: { '@type': 'Organization', name: 'LIDINC', url: 'https://lidinc.ru' },
-      offers: { '@type': 'Offer', price: section.price.replace(/\D/g, ''), priceCurrency: 'RUB', priceSpecification: { '@type': 'PriceSpecification', minPrice: section.price.replace(/\D/g, ''), priceCurrency: 'RUB' } },
-    }
+    const schemas = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: metaTitle.replace(' | LIDINC', ''),
+        description: metaDesc,
+        url,
+        provider: { '@type': 'Organization', name: 'LIDINC', url: 'https://lidinc.ru' },
+        offers: { '@type': 'Offer', price: section.price.replace(/\D/g, ''), priceCurrency: 'RUB' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map(({ q, a }) => ({
+          '@type': 'Question',
+          name: q,
+          acceptedAnswer: { '@type': 'Answer', text: a },
+        })),
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://lidinc.ru/' },
+          { '@type': 'ListItem', position: 2, name: metaTitle.replace(' | LIDINC', ''), item: url },
+        ],
+      },
+    ]
     const script = document.createElement('script')
     script.type = 'application/ld+json'
     script.id = 'service-schema'
-    script.textContent = JSON.stringify(schema)
+    script.textContent = JSON.stringify(schemas)
     document.head.appendChild(script)
 
     return () => {
