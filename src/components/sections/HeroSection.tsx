@@ -154,6 +154,8 @@ export default function HeroSection({ onScrollToServices }: {
         <video
           src={HERO_VIDEO} autoPlay loop muted playsInline
           className="w-full h-full object-cover"
+          // @ts-expect-error fetchpriority is valid HTML but not yet in React typedefs
+          fetchpriority="high"
         />
         <div className="absolute top-0 left-0 w-full h-32"
           style={{ background: 'linear-gradient(to bottom, #EDEEF5, transparent)' }} />
